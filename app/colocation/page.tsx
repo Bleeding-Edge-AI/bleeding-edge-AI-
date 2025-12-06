@@ -3,6 +3,7 @@ import { BadgeCheck, Zap, Shield, Server, Globe, ArrowRight, Lock, Network } fro
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServerRack3D } from '@/components/ServerRack3D';
+import { PlatformExperience } from '@/components/PlatformExperience';
 
 export const metadata: Metadata = {
     title: 'Premium Colocation | Bleeding Edge',
@@ -116,6 +117,9 @@ export default function ColocationPage() {
                     </div>
                 </div>
             </section>
+
+            {/* PLATFORM EXPERIENCE */}
+            <PlatformExperience />
 
             {/* Technical Specs */}
             <section className="relative z-10 py-24 px-6">
