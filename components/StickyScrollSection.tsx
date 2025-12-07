@@ -3,49 +3,55 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Server, Box, Zap, Terminal, Code, Cpu, Database } from 'lucide-react';
+import Image from 'next/image';
 
 /* -------------------------------------------------------------------------- */
 /*                                SUB-COMPONENTS                              */
 /* -------------------------------------------------------------------------- */
 
-// VISUAL 1: Bare Metal Server
+// VISUAL 1: Bare Metal Server (H100 Image + HUD)
 const ServerVisual = () => (
-    <div className="w-full h-full bg-zinc-900 border border-white/10 rounded-2xl p-8 relative overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:32px_32px]" />
+    <div className="w-full h-full bg-zinc-900 border border-white/10 rounded-2xl relative overflow-hidden flex items-center justify-center shadow-2xl shadow-purple-500/20">
 
-        {/* Server Blade Mockup */}
-        <div className="relative w-64 h-96 bg-black border border-white/20 rounded-lg shadow-2xl flex flex-col items-center py-6 gap-4">
-            {/* Fans */}
-            <div className="flex gap-2 mb-4">
-                {[1, 2, 3].map(i => (
-                    <div key={i} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center animate-spin-slow">
-                        <div className="w-8 h-8 rounded-full border-t-2 border-red-500/50" />
-                    </div>
-                ))}
-            </div>
+        {/* Realistic Image */}
+        {/* Note: Ensure /images/h100-chassis.jpg exists in public folder */}
+        <Image
+            src="/images/h100-v2.jpg"
+            alt="Nvidia H100 HGX Bare Metal Server Chassis"
+            fill
+            className="object-cover"
+            unoptimized
+        />
+        <div className="absolute inset-0 bg-black/20" /> {/* Dimmer */}
 
-            {/* Heatsinks */}
-            <div className="flex-1 w-full px-4 space-y-2">
-                {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="w-full h-8 bg-zinc-800 rounded border border-white/5 relative overflow-hidden">
-                        <div className="absolute top-0 bottom-0 left-0 w-1 bg-red-500/50" />
-                    </div>
-                ))}
-            </div>
+        {/* HUD OVERLAY */}
+        <div className="absolute inset-0 z-10">
+            {/* 1. Grid Pattern */}
+            <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:32px_32px] pointer-events-none" />
 
-            {/* Status Lights */}
-            <div className="w-full px-4 flex justify-between mt-auto pt-4 border-t border-white/10">
-                <div className="flex gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" style={{ animationDelay: '0.2s' }} />
+            {/* 2. Live Status Badge */}
+            <div className="absolute top-6 right-6 flex items-center gap-3 bg-black/60 border border-white/10 backdrop-blur-md px-3 py-1.5 rounded-full z-20">
+                <div className="flex gap-1.5">
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
                 </div>
-                <div className="text-[10px] text-gray-500 font-mono">H100-80GB-SXM5</div>
+                <span className="text-[10px] font-mono text-green-400 tracking-wider font-bold">LIVE :: 100% UPTIME</span>
             </div>
-        </div>
 
-        {/* Floating label */}
-        <div className="absolute top-4 right-4 bg-red-600/10 border border-red-600/30 text-red-500 px-3 py-1 rounded-full text-xs font-mono">
-            LIVE :: 100% UPTIME
+            {/* 3. Scanning Line Animation */}
+            <motion.div
+                className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50 shadow-[0_0_10px_rgba(6,182,212,0.5)]"
+                animate={{ top: ['0%', '100%'] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+            />
+
+            {/* Tech Decoration - Corner Brackets */}
+            <div className="absolute top-4 left-4 w-4 h-4 border-l-2 border-t-2 border-white/20" />
+            <div className="absolute top-4 right-4 w-4 h-4 border-r-2 border-t-2 border-white/20" />
+            <div className="absolute bottom-4 left-4 w-4 h-4 border-l-2 border-b-2 border-white/20" />
+            <div className="absolute bottom-4 right-4 w-4 h-4 border-r-2 border-b-2 border-white/20" />
         </div>
     </div>
 );
@@ -190,7 +196,8 @@ export function StickyScrollSection() {
                             <span className="text-red-500">Zero Overhead.</span>
                         </h3>
                         <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                            Bypass the hypervisor. Get 100% of the FLOPs and VRAM you pay for. Our bare metal instances eliminate virtualization noise, ensuring consistent latency for high-density inference fleets.
+                            Bypass the hypervisor. Get 100% of the FLOPs and VRAM you pay for. Our bare metal instances eliminate virtualization noise,
+                            ensuring consistent latency for high-density inference fleets.
                         </p>
 
                         {/* Pricing Cards */}
@@ -221,11 +228,12 @@ export function StickyScrollSection() {
                         </div>
 
                         <h3 className="text-4xl font-bold mb-6 text-white">
-                            Managed Inference <br />
-                            <span className="text-blue-500">Runtimes.</span>
+                            Managed Inference Runtimes. <br />
+                            <span className="text-blue-500">Architected for You.</span>
                         </h3>
                         <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                            Pre-tuned serving engines, optimized for our topology. We provide white-glove environments with vLLM, TGI, and TensorRT-LLM pre-installed and quantized. No dependency hell—just maximum token throughput.
+                            Pre-tuned serving engines, optimized for our topology. We provide white-glove environments with vLLM, TGI, and TensorRT-LLM pre-installed and quantized.
+                            No dependency hell—just maximum token throughput.
                         </p>
 
                         <div className="mb-6">
@@ -251,7 +259,8 @@ export function StickyScrollSection() {
                             <span className="text-purple-500">Instant Intelligence.</span>
                         </h3>
                         <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                            Instant scaling for Llama 3, Mixtral, and DeepSeek. Serverless access with zero cold starts. Deploy standard open-source models or your own private fine-tunes on dedicated, secure endpoints.
+                            Instant scaling for Llama 3, Mixtral, and DeepSeek. Serverless access with zero cold starts.
+                            Deploy standard open-source models or your own private fine-tunes on dedicated, secure endpoints.
                         </p>
 
                         {/* Logo Carousel */}
