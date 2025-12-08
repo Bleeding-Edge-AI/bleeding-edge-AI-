@@ -115,7 +115,7 @@ export function InfrastructureBlueprint() {
                     className="text-center mb-10"
                 >
                     <h2 className="text-4xl md:text-5xl font-bold mb-4">The Foundation</h2>
-                    <p className="text-gray-400 text-lg">Bleeding Edge facilities meeting NVIDIA-certified architecture.</p>
+                    <p className="text-gray-400 text-lg">Bleeding Edge facilities meets NVIDIA-certified architecture.</p>
                 </motion.div>
 
                 {/* 1. OUTER CONTAINER (FACILITY) */}

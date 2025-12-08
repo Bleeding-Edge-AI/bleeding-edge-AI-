@@ -2,8 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Server, Box, Zap, Terminal, Code, Cpu, Database } from 'lucide-react';
+import { Server, Box, Zap, Terminal, Code, Cpu, Database, Brain, Globe, Network } from 'lucide-react';
 import Image from 'next/image';
+import { OrbitingCircles } from '@/components/magicui/orbiting-circles';
+import Marquee from '@/components/magicui/marquee';
 
 /* -------------------------------------------------------------------------- */
 /*                                SUB-COMPONENTS                              */
@@ -57,6 +59,7 @@ const ServerVisual = () => (
 );
 
 // VISUAL 2: Managed Container
+// VISUAL 2: Managed Container
 const ContainerVisual = () => (
     <div className="w-full h-full bg-blue-950/20 border border-blue-500/10 rounded-2xl p-8 relative overflow-hidden flex items-center justify-center">
         {/* Abstract Container Box */}
@@ -71,7 +74,7 @@ const ContainerVisual = () => (
                 <Box className="w-12 h-12 text-blue-400" />
             </div>
 
-            {/* Floating Dependencies removed */}
+            {/* Floating Dependencies */}
             <motion.div
                 animate={{ y: [-10, 10, -10] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -90,7 +93,7 @@ const ContainerVisual = () => (
     </div>
 );
 
-// VISUAL 3: API Code Block
+// VISUAL 3: API Code Block (Restored)
 const CodeVisual = () => (
     <div className="w-full h-full bg-zinc-900 border border-white/10 rounded-2xl p-6 relative overflow-hidden flex flex-col font-mono text-sm leading-relaxed text-gray-300 shadow-2xl">
         <div className="flex items-center gap-2 mb-4 p-2 bg-black/50 rounded-lg border border-white/5">
@@ -99,7 +102,7 @@ const CodeVisual = () => (
             <div className="w-3 h-3 rounded-full bg-green-500" />
             <span className="ml-2 text-xs text-gray-500">api_request.py</span>
         </div>
-        <div className="space-y-1 overflow-hidden">
+        <div className="space-y-1 overflow-hidden z-10">
             <div><span className="text-purple-400">import</span> openai</div>
             <div className="h-2"></div>
             <div>client = openai.OpenAI(</div>
@@ -117,7 +120,7 @@ const CodeVisual = () => (
             <div><span className="text-blue-400">print</span>(response.choices[0].message)</div>
         </div>
 
-        {/* Typing cursor animation */}
+        {/* Cursor Animation */}
         <motion.div
             className="absolute bottom-10 right-10 w-32 h-10 bg-green-500/20 border border-green-500/50 rounded flex items-center justify-center text-green-400 font-bold"
             animate={{ opacity: [0, 1, 0] }}
@@ -127,6 +130,7 @@ const CodeVisual = () => (
         </motion.div>
     </div>
 );
+
 
 
 /* -------------------------------------------------------------------------- */
@@ -265,12 +269,26 @@ export function StickyScrollSection() {
 
                         {/* Logo Carousel */}
                         <div className="w-full overflow-hidden border-t border-b border-white/10 py-6 bg-white/5">
-                            <div className="flex gap-8 items-center opacity-50 justify-around">
-                                <span className="text-xl font-bold">LLAMA 3</span>
-                                <span className="text-xl font-bold">MISTRAL</span>
-                                <span className="text-xl font-bold">GEMMA</span>
-                                <span className="text-xl font-bold">PHI-3</span>
-                            </div>
+                            <Marquee className="[--duration:20s] [--gap:4rem]">
+                                {[
+                                    { name: "DeepSeek", logo: "/images/logos/deepseek.png" },
+                                    { name: "Google", logo: "/images/logos/google.png" },
+                                    { name: "Meta", logo: "/images/logos/meta.png" },
+                                    { name: "Mistral", logo: "/images/logos/mistral.png" },
+                                    { name: "OpenAI", logo: "/images/logos/openai.png" },
+                                ].map((model, i) => (
+                                    <div key={i} className="w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-50 hover:opacity-100">
+                                        <Image
+                                            src={model.logo}
+                                            alt={model.name}
+                                            width={40}
+                                            height={40}
+                                            className="object-contain h-10 w-auto"
+                                            unoptimized
+                                        />
+                                    </div>
+                                ))}
+                            </Marquee>
                         </div>
                         <div className="mt-4 text-center text-xs text-gray-500">
                             + 50 more open source models available
