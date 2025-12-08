@@ -277,7 +277,7 @@ export function StickyScrollSection() {
                                     { name: "Mistral", logo: "/images/logos/mistral.png" },
                                     { name: "OpenAI", logo: "/images/logos/openai.png" },
                                 ].map((model, i) => (
-                                    <div key={i} className="w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-50 hover:opacity-100">
+                                    <div key={i} className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-50 hover:opacity-100">
                                         <Image
                                             src={model.logo}
                                             alt={model.name}
