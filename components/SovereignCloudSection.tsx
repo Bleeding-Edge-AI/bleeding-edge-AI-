@@ -2,151 +2,41 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Key, UserCheck } from 'lucide-react';
+import { MapPin, Key, UserCheck, Lock } from 'lucide-react';
 
 /* -------------------------------------------------------------------------- */
-/*                                3D VAULT COMPONENT                          */
+/*                                STATIC CARD VISUAL                          */
 /* -------------------------------------------------------------------------- */
 
 const VaultVisual = () => {
-    // Cube dimensions
-    const width = 280; // px
-    const height = 360; // px - taller monolith
-    const depth = 280; // px
-
-    // Half dimensions for transforms
-    const halfW = width / 2;
-    const halfH = height / 2;
-    const halfD = depth / 2;
-
     return (
-        <div className="relative w-full h-[600px] flex items-center justify-center perspective-1000 overflow-hidden">
+        <div className="relative w-full h-[500px] flex items-center justify-center">
+            <div className="relative w-full max-w-lg aspect-square bg-[#0A0A0A] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+                {/* Diagonal Stripes Background */}
+                <div className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, #fff, #fff 1px, transparent 1px, transparent 10px)'
+                    }}
+                />
 
-            {/* Subtler Ambient Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-900/10 blur-[100px] rounded-full pointer-events-none" />
+                {/* Red Glow Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-transparent to-transparent pointer-events-none" />
 
-            {/* LEVITATION WRAPPER */}
-            <motion.div
-                animate={{ y: [-15, 15, -15] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="relative preserve-3d"
-            >
-                {/* ROTATION WRAPPER */}
-                <motion.div
-                    className="relative preserve-3d"
-                    style={{ width, height }}
-                    animate={{ rotateY: [0, 360] }}
-                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                >
-                    {/* --- INTERNAL CORE (THE AI MODEL) --- */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 preserve-3d">
-                        {/* Glowing Red Cylinder/Core */}
-                        <motion.div
-                            className="w-20 h-64 bg-red-600 rounded-full blur-md"
-                            animate={{ opacity: [0.6, 1, 0.6], scale: [0.9, 1.05, 0.9] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                            style={{
-                                boxShadow: '0 0 50px rgba(220, 38, 38, 0.6)',
-                                filter: 'drop-shadow(0 0 20px #dc2626)'
-                            }}
-                        />
-                        {/* Core Structure (Visual anchor) */}
-                        <div className="absolute inset-0 border border-red-500/30 rounded-full" />
+                {/* Center Content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                    <div className="mb-8 p-6 rounded-2xl bg-white/5 border border-white/5 shadow-xl backdrop-blur-sm">
+                        <Lock className="w-20 h-20 text-red-500" strokeWidth={1.5} />
                     </div>
 
-                    {/* --- OBSIDIAN GLASS FACES --- */}
+                    <h3 className="text-3xl font-bold text-white mb-3">Your Private Cluster</h3>
+                    <p className="text-gray-500 font-mono text-sm uppercase tracking-widest">Physically Isolated</p>
+                </div>
 
-                    {/* Common Face Style */}
-                    {/* backdrop-blur-sm combined with dark bg gives the obsidian look */}
-                    {/* Inset shadows create the "thick glass" edge reflection effect */}
-
-                    {/* FRONT */}
-                    <div
-                        className="absolute inset-0 bg-black/80 backdrop-blur-sm border border-white/10 flex items-center justify-center"
-                        style={{ transform: `translateZ(${halfD}px)` }}
-                    >
-                        <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
-                        <div className="absolute bottom-6 w-full text-center">
-                            <div className="inline-block w-8 h-1 bg-red-500 rounded-full animate-pulse" />
-                        </div>
-                    </div>
-
-                    {/* BACK */}
-                    <div
-                        className="absolute inset-0 bg-black/80 backdrop-blur-sm border border-white/10"
-                        style={{ transform: `rotateY(180deg) translateZ(${halfD}px)` }}
-                    >
-                        <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
-                    </div>
-
-                    {/* RIGHT (Width is Depth) */}
-                    <div
-                        className="absolute top-0 bottom-0 bg-black/80 backdrop-blur-sm border border-white/10"
-                        style={{
-                            width: depth,
-                            left: width / 2 - depth / 2, // Centering logic
-                            transform: `rotateY(90deg) translateZ(${halfW}px)`
-                        }}
-                    >
-                        <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
-                        {/* Side Vents Detail */}
-                        <div className="absolute inset-x-6 top-10 flex flex-col gap-2 opacity-20">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                                <div key={i} className="h-px bg-white w-full" />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* LEFT */}
-                    <div
-                        className="absolute top-0 bottom-0 bg-black/80 backdrop-blur-sm border border-white/10"
-                        style={{
-                            width: depth,
-                            left: width / 2 - depth / 2,
-                            transform: `rotateY(-90deg) translateZ(${halfW}px)`
-                        }}
-                    >
-                        <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
-                        <div className="absolute inset-x-6 top-10 flex flex-col gap-2 opacity-20">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                                <div key={i} className="h-px bg-white w-full" />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* TOP (Cap) */}
-                    <div
-                        className="absolute left-0 right-0 bg-zinc-900 border border-white/10"
-                        style={{
-                            height: depth,
-                            top: height / 2 - depth / 2,
-                            transform: `rotateX(90deg) translateZ(${halfH}px)`
-                        }}
-                    >
-                        <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,1)]" />
-                        {/* Top Logo/Marker */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-12 h-12 border border-red-500/20 rounded-full flex items-center justify-center">
-                                <div className="w-2 h-2 bg-red-500 rounded-full" />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* BOTTOM (Cap) */}
-                    <div
-                        className="absolute left-0 right-0 bg-zinc-900 border border-white/10"
-                        style={{
-                            height: depth,
-                            top: height / 2 - depth / 2,
-                            transform: `rotateX(-90deg) translateZ(${halfH}px)`
-                        }}
-                    >
-                        <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,1)]" />
-                        <div className="absolute inset-0 bg-red-500/5" />
-                    </div>
-
-                </motion.div>
-            </motion.div>
+                {/* Corner Decoration */}
+                <div className="absolute top-0 right-0 p-8 opacity-20">
+                    <div className="w-24 h-24 bg-red-500/20 rounded-full blur-3xl"></div>
+                </div>
+            </div>
         </div>
     );
 };

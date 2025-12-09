@@ -4,6 +4,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServerRack3D } from '@/components/ServerRack3D';
 import { PlatformExperience } from '@/components/PlatformExperience';
+import { StrategicMap } from '@/components/StrategicMap';
+import { ColoDesignDemo } from '@/components/ColoDesignDemo';
+import { InfrastructureBento } from '@/components/InfrastructureBento';
+import { HeroDashboard } from '@/components/HeroDashboard';
+import { HeroBunkerSchematic } from '@/components/HeroBunkerSchematic';
+import { HeroSystemVisual } from '@/components/HeroSystemVisual';
 
 export const metadata: Metadata = {
     title: 'Premium Colocation | Bleeding Edge',
@@ -51,7 +57,7 @@ export default function ColocationPage() {
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#202020_1px,transparent_1px),linear-gradient(to_bottom,#202020_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
             </div>
 
-            <section className="relative z-10 container mx-auto px-4 pt-40 pb-20 grid lg:grid-cols-2 gap-12 items-center">
+            <section className="relative z-10 container mx-auto px-4 pt-32 pb-20 grid lg:grid-cols-2 gap-12 items-center">
                 {/* LEFT CONTENT */}
                 <div className="space-y-8">
                     <div className="inline-flex items-center space-x-2 border border-white/10 bg-white/5 px-3 py-1 rounded-full backdrop-blur-md">
@@ -59,19 +65,18 @@ export default function ColocationPage() {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                         </span>
-                        <span className="text-xs font-mono text-gray-300 tracking-wide">CAPACITY AVAILABLE: US-EAST-1</span>
+                        <span className="text-xs font-mono text-gray-300 tracking-wide">CAPACITY LIVE</span>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
-                        Your Hardware. <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
-                            Our Fortress.
+                        Fortress-Grade Colocation <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-600">
+                            for the Age of AI.
                         </span>
                     </h1>
 
                     <p className="text-xl text-gray-400 max-w-lg leading-relaxed">
-                        High-density colocation suites designed for AI workloads.
-                        Deploy up to <span className="text-white font-semibold">100kW per rack</span> with direct liquid cooling support.
+                        Modular, Tier III+ bunkers built for high-density inference. Manage your physical footprint with the speed of software.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -85,17 +90,15 @@ export default function ColocationPage() {
 
                     {/* Trust Badges */}
                     <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 font-mono">
-                        <div className="flex items-center gap-2"><BadgeCheck className="w-4 h-4 text-red-500" /> SOC2 TYPE II</div>
-                        <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-red-500" /> ISO 27001</div>
-                        <div className="flex items-center gap-2"><Zap className="w-4 h-4 text-red-500" /> 100% UPTIME</div>
+                        <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-red-500" /> Tier IV reliability</div>
+                        <div className="flex items-center gap-2"><Network className="w-4 h-4 text-red-500" /> Carrier neutral</div>
+                        <div className="flex items-center gap-2"><Server className="w-4 h-4 text-red-500" /> Operations as a platform</div>
                     </div>
                 </div>
 
-                {/* RIGHT VISUAL: 3D SERVER RACK */}
-                <div className="hidden lg:block h-[600px] w-full max-w-lg mx-auto relative">
-                    <ServerRack3D />
-                    {/* Glow Effect behind the rack */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-900/10 blur-[100px] rounded-full -z-10 pointer-events-none" />
+                {/* RIGHT VISUAL: HERO SYSTEM VISUAL (Hardware + Config) */}
+                <div className="h-full w-full relative flex items-center justify-center">
+                    <HeroSystemVisual />
                 </div>
             </section>
 
@@ -121,44 +124,8 @@ export default function ColocationPage() {
             {/* PLATFORM EXPERIENCE */}
             <PlatformExperience />
 
-            {/* Technical Specs */}
-            <section className="relative z-10 py-24 px-6">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col lg:flex-row gap-16 items-center">
-                        <div className="lg:w-1/2 space-y-8">
-                            <h2 className="text-3xl md:text-4xl font-bold text-white">Built for Uptime</h2>
-                            <p className="text-gray-400 text-lg">
-                                Every critical system is concurrently maintainable. No single point of failure.
-                            </p>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                {specs.map((spec, i) => (
-                                    <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-                                        <div className="text-xs text-gray-500 uppercase font-mono mb-1">{spec.label}</div>
-                                        <div className="text-lg font-bold text-white font-mono">{spec.value}</div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="p-6 bg-red-950/20 border border-red-500/20 rounded-xl flex items-start gap-4">
-                                <Lock className="w-6 h-6 text-red-500 mt-1" />
-                                <div>
-                                    <h4 className="text-white font-bold mb-1">Physical Security</h4>
-                                    <p className="text-sm text-gray-400">Biometric scanners, mantraps, and 24/7 armed guards ensure your hardware is untouchable.</p>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Visual placeholder for specs - could be an image or CSS graphic */}
-                        <div className="lg:w-1/2 h-full min-h-[400px] bg-gradient-to-br from-white/5 to-transparent rounded-2xl border border-white/10 relative overflow-hidden flex items-center justify-center">
-                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center grayscale opacity-20 mix-blend-overlay" />
-                            <div className="relative z-10 text-center p-8">
-                                <Shield className="w-24 h-24 text-white/5 mx-auto mb-4" />
-                                <div className="text-2xl font-mono font-bold text-white/20">TIER IV ARCHITECTURE</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            {/* INFRASTRUCTURE SPECS BENTO */}
+            <InfrastructureBento />
 
             {/* Locations */}
             <section className="relative z-10 py-24 px-6 bg-[#050505]">
@@ -186,6 +153,27 @@ export default function ColocationPage() {
                     ))}
                 </div>
             </section>
+
+            {/* STRATEGIC MAP */}
+            <StrategicMap />
+
+            {/* AUTOMATED DEMO (PHANTOM ARCHITECT) */}
+            <div className="py-24 border-y border-white/5 bg-[#050505] relative overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-4">
+                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                        <span>AUTOMATED DESIGN</span>
+                    </div>
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">The Phantom Architect</h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+                        Watch how easy it is to spec a high-performance cluster. From zero to deployment in seconds.
+                    </p>
+                </div>
+                <div className="scale-90 md:scale-100 origin-top">
+                    <ColoDesignDemo />
+                </div>
+            </div>
+
 
             {/* CTA */}
             <section className="relative z-10 py-20 px-6">

@@ -52,7 +52,7 @@ export const Navbar: React.FC = () => {
       dropdown: [
         { name: 'Build', path: '/build' },
         { name: 'Colocation', path: '/colocation' },
-        { name: 'AI Cloud', path: '/ai-cloud' },
+        { name: 'AI Cloud', path: '/ai-cloud-v2' },
         { name: 'Applied AI', path: '/applied-ai' }
       ]
     },
