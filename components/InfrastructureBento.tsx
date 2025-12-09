@@ -13,7 +13,7 @@ interface BentoCardProps {
     className?: string;
     title: string;
     subtitle: string;
-    icon?: React.ElementType;
+    icon?: React.ElementType<{ className?: string }>;
     children?: React.ReactNode;
     hoverColor?: string; // e.g., "border-orange-500"
 }

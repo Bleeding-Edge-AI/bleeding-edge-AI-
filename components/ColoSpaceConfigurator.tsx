@@ -22,7 +22,7 @@ interface ItemDefinition {
     label: string;
     power: number; // kW
     space: number; // m² (approx)
-    icon: React.ElementType;
+    icon: React.ElementType<{ className?: string }>;
     color: string;
     description: string;
 }
