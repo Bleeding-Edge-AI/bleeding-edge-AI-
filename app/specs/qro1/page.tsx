@@ -37,10 +37,9 @@ export default function QRO1SpecsPage() {
                         <img
                             src="/images/qro1/hero-bg.jpg"
                             alt="QRO1 Facility"
-                            className="w-full h-full object-cover opacity-60"
+                            className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/80 to-neutral-950/30" />
-                        <div className="absolute inset-0 bg-black/40" />
+                        {/* No overlays as requested */}
                     </div>
 
                     <div className="max-w-4xl mx-auto text-center mb-16 relative z-10">
@@ -54,13 +53,13 @@ export default function QRO1SpecsPage() {
                                 The Heart of Latin America's Digital Backbone
                             </span>
                         </h1>
-                        <p className="text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed drop-shadow-md font-medium">
+                        <p className="text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed drop-shadow-xl font-semibold">
                             Querétaro's strategic colocation hub. Purpose-built for AI inference and high-density workloads within a modular infrastructure cluster.
                         </p>
                     </div>
 
                     {/* HERO STATS */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                    <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
                         {[
                             { label: "Critical Load", value: "3 MW", icon: Zap },
                             { label: "Data Halls", value: "6 Halls", icon: Layers },
@@ -72,11 +71,11 @@ export default function QRO1SpecsPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
-                                className="bg-neutral-900/50 border border-white/10 p-6 rounded-xl flex flex-col items-center justify-center text-center hover:border-white/20 transition-colors"
+                                className="bg-neutral-950/80 backdrop-blur-md border border-white/20 p-6 rounded-xl flex flex-col items-center justify-center text-center hover:border-white/40 transition-colors shadow-lg"
                             >
                                 <stat.icon className="w-6 h-6 text-red-500 mb-3" />
                                 <div className="text-2xl font-bold font-mono text-white mb-1">{stat.value}</div>
-                                <div className="text-xs text-gray-500 uppercase tracking-wider">{stat.label}</div>
+                                <div className="text-xs text-gray-400 uppercase tracking-wider font-semibold">{stat.label}</div>
                             </motion.div>
                         ))}
                     </div>
