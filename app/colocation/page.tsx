@@ -3,13 +3,15 @@ import { BadgeCheck, Zap, Shield, Server, Globe, ArrowRight, Lock, Network } fro
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServerRack3D } from '@/components/ServerRack3D';
-import { PlatformExperience } from '@/components/PlatformExperience';
+// import { PlatformExperience } from '@/components/PlatformExperience'; // Keeping commented out just in case
 import { StrategicMap } from '@/components/StrategicMap';
 import { ColoDesignDemo } from '@/components/ColoDesignDemo';
 import { InfrastructureBento } from '@/components/InfrastructureBento';
 import { HeroDashboard } from '@/components/HeroDashboard';
 import { HeroBunkerSchematic } from '@/components/HeroBunkerSchematic';
 import { HeroSystemVisual } from '@/components/HeroSystemVisual';
+import OperationsGrid from '@/components/OperationsGrid';
+import WholesaleScaleSection from '@/components/WholesaleScaleSection';
 
 export const metadata: Metadata = {
     title: 'Premium Colocation | Bleeding Edge',
@@ -104,25 +106,14 @@ export default function ColocationPage() {
 
             {/* REFACTORED SECTIONS (Features, Specs, Locations) */}
 
-            {/* Features Grid */}
-            <section className="relative z-10 py-24 border-y border-white/5 bg-white/[0.02]">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {features.map((feat, idx) => (
-                            <div key={idx} className="p-8 bg-[#0a0a0a] border border-white/5 rounded-2xl hover:border-red-500/50 transition-colors group">
-                                <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-6 text-white group-hover:bg-red-600 transition-colors">
-                                    <feat.icon className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-3">{feat.title}</h3>
-                                <p className="text-gray-400 text-sm leading-relaxed">{feat.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+
 
             {/* PLATFORM EXPERIENCE */}
-            <PlatformExperience />
+            {/* OPERATIONS GRID (Software-Defined Operations) */}
+            <OperationsGrid />
+
+            {/* WHOLESALE / HYPERSCALE SECTION (Regional Execution Engine) */}
+            <WholesaleScaleSection />
 
             {/* INFRASTRUCTURE SPECS BENTO */}
             <InfrastructureBento />
@@ -162,11 +153,11 @@ export default function ColocationPage() {
                 <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-4">
                         <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-                        <span>AUTOMATED DESIGN</span>
+                        <span>INSTANT CAPACITY</span>
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">The Phantom Architect</h2>
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Instant Capacity. Custom Space.</h2>
                     <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-                        Watch how easy it is to spec a high-performance cluster. From zero to deployment in seconds.
+                        Deploy 10kW to 50kW racks in our live locations. Select your density, cooling, and connectivity profiles.
                     </p>
                 </div>
                 <div className="scale-90 md:scale-100 origin-top">
