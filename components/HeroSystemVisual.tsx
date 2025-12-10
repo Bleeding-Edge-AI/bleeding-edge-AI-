@@ -146,8 +146,11 @@ function VerticalPDU({ color, delay = 0 }: { color: string, delay?: number }) {
 
             {/* Internal Energy Flow */}
             <div className="w-1 flex-1 bg-neutral-800 relative overflow-hidden rounded-full">
+                {/* Mobile: Static Fill */}
+                <div className={`absolute inset-0 ${color} opacity-70 md:hidden`} />
+                {/* Desktop: Animated Flow */}
                 <motion.div
-                    className={`absolute inset-0 ${color} opacity-70`}
+                    className={`absolute inset-0 ${color} opacity-70 hidden md:block`}
                     animate={{ top: ['-100%', '100%'] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', delay }}
                 />
@@ -167,8 +170,8 @@ function VerticalPDU({ color, delay = 0 }: { color: string, delay?: number }) {
 function LegacyRackVisual() {
     return (
         <div className="relative w-80 h-[500px] border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg p-2 shadow-2xl shadow-red-900/20 z-20">
-            {/* Top Glow Pulse */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-red-500/50 blur-[2px] animate-pulse" />
+            {/* Top Glow Pulse (Reduced on mobile) */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-red-500/50 blur-[2px] animate-pulse md:animate-pulse" />
 
             {/* Rack Units Grid */}
             <div className="h-full w-full grid grid-rows-[repeat(42,minmax(0,1fr))] gap-[2px]">
@@ -196,7 +199,7 @@ function LegacyRackVisual() {
 function SystemWidget({ title, value, icon: Icon, iconColor, graphColor }: any) {
     const [liveValue, setLiveValue] = useState(parseFloat(value));
 
-    // Simple fluctuation
+    // Simple fluctuation (Disabled on mobile to save frames? - keeping for now as it's low cost)
     useEffect(() => {
         const interval = setInterval(() => {
             const num = parseFloat(value.replace(/[^0-9.]/g, ''));
@@ -243,7 +246,19 @@ function LiveLineGraph({ color }: { color: string }) {
                 preserveAspectRatio="none"
                 className="w-[200%] h-full absolute top-0 left-0"
             >
+                {/* Mobile: Static Graph */}
+                <g className="md:hidden">
+                    <path d="M 0 25 L 10 20 L 20 30 L 30 25 L 40 22 L 50 28 L 60 25 L 70 20 L 80 30 L 90 25 L 100 25 L 110 20 L 120 30 L 130 25 L 140 22 L 150 28 L 160 25 L 170 20 L 180 30 L 190 25 L 200 25"
+                        fill="none"
+                        stroke={color}
+                        strokeWidth="2"
+                        vectorEffect="non-scaling-stroke"
+                    />
+                </g>
+
+                {/* Desktop: Animated Graph */}
                 <motion.g
+                    className="hidden md:block"
                     initial={{ x: 0 }}
                     animate={{ x: "-50%" }}
                     transition={{

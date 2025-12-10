@@ -14,8 +14,12 @@ const WholesaleScaleSection = () => {
             <div className="absolute inset-0 pointer-events-none">
                 {/* Moving Grid */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]">
+                    {/* Static Grid for Mobile (No Animation) */}
+                    <div className="absolute inset-0 bg-neutral-950/20 md:hidden" />
+
+                    {/* Animated Grid for Desktop */}
                     <motion.div
-                        className="absolute inset-0 bg-neutral-950/20"
+                        className="absolute inset-0 bg-neutral-950/20 hidden md:block"
                         animate={{ x: [-24, 0] }}
                         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                     />
@@ -38,7 +42,7 @@ const WholesaleScaleSection = () => {
                         <div>
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-mono font-bold uppercase tracking-widest mb-6">
                                 <Map className="w-3 h-3" />
-                                Strategic Expansion
+                                Wholesale Build-to-Suit
                             </div>
                             <h2 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-[0.9]">
                                 Dedicated<br />
@@ -61,7 +65,7 @@ const WholesaleScaleSection = () => {
                         <ContentCard
                             icon={Timer}
                             title="120 Day Deployments"
-                            description="Rapid construction using modular prefab methodologies."
+                            description="Built with Bleeding Edge Prefab Modules"
                         />
                         <ContentCard
                             icon={Map}
@@ -76,7 +80,7 @@ const WholesaleScaleSection = () => {
                         <ContentCard
                             icon={Zap}
                             title="Time-to-Power"
-                            description="Grid connections secured and energized faster than market average."
+                            description="Real access to large-scale power."
                         />
                     </div>
                 </div>
