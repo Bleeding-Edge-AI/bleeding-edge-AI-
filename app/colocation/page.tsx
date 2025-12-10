@@ -1,10 +1,9 @@
 import React from 'react';
-import { BadgeCheck, Zap, Shield, Server, Globe, ArrowRight, Lock, Network } from 'lucide-react';
+import { BadgeCheck, Zap, Shield, Server, ArrowRight, Lock, Network } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServerRack3D } from '@/components/ServerRack3D';
 // import { PlatformExperience } from '@/components/PlatformExperience'; // Keeping commented out just in case
-import { StrategicMap } from '@/components/StrategicMap';
 import { ColoDesignDemo } from '@/components/ColoDesignDemo';
 import { InfrastructureBento } from '@/components/InfrastructureBento';
 import { HeroDashboard } from '@/components/HeroDashboard';
@@ -44,12 +43,7 @@ export default function ColocationPage() {
         { label: 'Security', value: 'Biometric + Mantrap' },
     ];
 
-    const locations = [
-        { city: 'Ashburn, VA', region: 'US East', code: 'US-ASH-1', status: 'Available' },
-        { city: 'Santa Clara, CA', region: 'US West', code: 'US-SJC-2', status: 'Limited' },
-        { city: 'London, UK', region: 'Europe', code: 'EU-LHR-1', status: 'Available' },
-        { city: 'Tokyo, JP', region: 'Asia Pacific', code: 'AP-NRT-1', status: 'Waitlist' },
-    ];
+
 
     return (
         <div className="bg-black min-h-screen text-white selection:bg-red-500 selection:text-white">
@@ -108,47 +102,16 @@ export default function ColocationPage() {
 
 
 
-            {/* PLATFORM EXPERIENCE */}
-            {/* OPERATIONS GRID (Software-Defined Operations) */}
+            {/* PLATFORM EXPERIENCE / OPERATIONS GRID */}
             <OperationsGrid />
 
-            {/* WHOLESALE / HYPERSCALE SECTION (Regional Execution Engine) */}
-            <WholesaleScaleSection />
-
-            {/* INFRASTRUCTURE SPECS BENTO */}
+            {/* INFRASTRUCTURE SPECS BENTO (Technical Specs) */}
             <InfrastructureBento />
 
-            {/* Locations */}
-            <section className="relative z-10 py-24 px-6 bg-[#050505]">
-                <div className="max-w-7xl mx-auto text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Global Presence</h2>
-                    <p className="text-gray-400">Low-latency hubs in major digital corridors.</p>
-                </div>
+            {/* WHOLESALE / HYPERSCALE SECTION (Moved above Instant Capacity) */}
+            <WholesaleScaleSection />
 
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
-                    {locations.map((loc, idx) => (
-                        <div key={idx} className="p-6 border border-white/10 rounded-xl bg-black hover:border-red-500/50 transition-colors group relative overflow-hidden">
-                            <div className="flex justify-between items-start mb-4">
-                                <Globe className="w-6 h-6 text-gray-600 group-hover:text-red-500 transition-colors" />
-                                <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${loc.status === 'Available' ? 'bg-green-500/10 text-green-500' :
-                                    loc.status === 'Limited' ? 'bg-yellow-500/10 text-yellow-500' :
-                                        'bg-red-500/10 text-red-500'
-                                    }`}>
-                                    {loc.status}
-                                </span>
-                            </div>
-                            <h3 className="text-lg font-bold text-white">{loc.city}</h3>
-                            <div className="text-sm text-gray-500 mb-1">{loc.region}</div>
-                            <div className="text-xs font-mono text-gray-600">{loc.code}</div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* STRATEGIC MAP */}
-            <StrategicMap />
-
-            {/* AUTOMATED DEMO (PHANTOM ARCHITECT) */}
+            {/* INSTANT CAPACITY (ColoDesignDemo) */}
             <div className="py-24 border-y border-white/5 bg-[#050505] relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-4">
