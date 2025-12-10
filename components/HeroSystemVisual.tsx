@@ -20,7 +20,7 @@ export function HeroSystemVisual() {
 
                     {/* Horizontal Signal */}
                     <motion.div
-                        className="absolute top-1 left-0 h-[2px] w-full bg-green-500/50"
+                        className="absolute top-1 left-0 h-[2px] w-full bg-green-500/50 hidden md:block will-change-transform"
                         animate={{ opacity: [0, 1, 0], left: ['-100%', '100%'] }}
                         transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                     />
@@ -30,7 +30,7 @@ export function HeroSystemVisual() {
                         {/* The Dropping Cable */}
                         <div className="w-1 h-full bg-neutral-800 relative overflow-hidden rounded-b-md">
                             <motion.div
-                                className="absolute inset-0 bg-green-500"
+                                className="absolute inset-0 bg-green-500 hidden md:block will-change-transform"
                                 animate={{ y: ['-100%', '100%'] }}
                                 transition={{ duration: 0.5, repeat: Infinity, ease: 'linear' }}
                             />
@@ -65,7 +65,7 @@ export function HeroSystemVisual() {
                         {/* Flow Window */}
                         <div className="w-full h-2 bg-black/80 rounded-full overflow-hidden relative">
                             <motion.div
-                                className="absolute inset-0 bg-blue-500"
+                                className="absolute inset-0 bg-blue-500 hidden md:block will-change-transform"
                                 animate={{ x: ['-100%', '100%'] }}
                                 transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                             />
@@ -85,7 +85,7 @@ export function HeroSystemVisual() {
                         {/* Flow Window */}
                         <div className="w-full h-2 bg-black/80 rounded-full overflow-hidden relative">
                             <motion.div
-                                className="absolute inset-0 bg-red-500/80"
+                                className="absolute inset-0 bg-red-500/80 hidden md:block will-change-transform"
                                 animate={{ x: ['-100%', '100%'] }}
                                 transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                             />
@@ -150,7 +150,7 @@ function VerticalPDU({ color, delay = 0 }: { color: string, delay?: number }) {
                 <div className={`absolute inset-0 ${color} opacity-70 md:hidden`} />
                 {/* Desktop: Animated Flow */}
                 <motion.div
-                    className={`absolute inset-0 ${color} opacity-70 hidden md:block`}
+                    className={`absolute inset-0 ${color} opacity-70 hidden md:block will-change-transform`}
                     animate={{ top: ['-100%', '100%'] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', delay }}
                 />
@@ -258,7 +258,7 @@ function LiveLineGraph({ color }: { color: string }) {
 
                 {/* Desktop: Animated Graph */}
                 <motion.g
-                    className="hidden md:block"
+                    className="hidden md:block will-change-transform"
                     initial={{ x: 0 }}
                     animate={{ x: "-50%" }}
                     transition={{

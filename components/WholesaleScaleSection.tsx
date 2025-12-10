@@ -19,7 +19,7 @@ const WholesaleScaleSection = () => {
 
                     {/* Animated Grid for Desktop */}
                     <motion.div
-                        className="absolute inset-0 bg-neutral-950/20 hidden md:block"
+                        className="absolute inset-0 bg-neutral-950/20 hidden md:block will-change-transform"
                         animate={{ x: [-24, 0] }}
                         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                     />

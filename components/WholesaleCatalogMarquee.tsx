@@ -18,7 +18,7 @@ const WholesaleCatalogMarquee = ({ className }: { className?: string }) => {
             </div>
 
             {/* Desktop: Infinite Marquee (Visual Appeal) */}
-            <div className="hidden md:block">
+            <div className="hidden md:block will-change-transform">
                 <Marquee pauseOnHover className="[--duration:60s]">
                     {siteCatalog.map((site, index) => (
                         <SiteCard key={index} data={site} />

@@ -4,13 +4,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServerRack3D } from '@/components/ServerRack3D';
 // import { PlatformExperience } from '@/components/PlatformExperience'; // Keeping commented out just in case
-import { ColoDesignDemo } from '@/components/ColoDesignDemo';
 import { InfrastructureBento } from '@/components/InfrastructureBento';
 import { HeroDashboard } from '@/components/HeroDashboard';
 import { HeroBunkerSchematic } from '@/components/HeroBunkerSchematic';
 import { HeroSystemVisual } from '@/components/HeroSystemVisual';
 import OperationsGrid from '@/components/OperationsGrid';
 import WholesaleScaleSection from '@/components/WholesaleScaleSection';
+import { DeploymentHub } from '@/components/DeploymentHub';
 
 export const metadata: Metadata = {
     title: 'Premium Colocation | Bleeding Edge',
@@ -111,22 +111,8 @@ export default function ColocationPage() {
             {/* WHOLESALE / HYPERSCALE SECTION (Moved above Instant Capacity) */}
             <WholesaleScaleSection />
 
-            {/* INSTANT CAPACITY (ColoDesignDemo) */}
-            <div className="py-24 border-y border-white/5 bg-[#050505] relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-4">
-                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-                        <span>INSTANT CAPACITY</span>
-                    </div>
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Instant Capacity. Custom Space.</h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-                        Deploy 10kW to 50kW racks in our live locations. Select your density, cooling, and connectivity profiles.
-                    </p>
-                </div>
-                <div className="scale-90 md:scale-100 origin-top">
-                    <ColoDesignDemo />
-                </div>
-            </div>
+            {/* DEPLOYMENT HUB (Replaces Instant Capacity) */}
+            <DeploymentHub />
 
 
             {/* CTA */}
