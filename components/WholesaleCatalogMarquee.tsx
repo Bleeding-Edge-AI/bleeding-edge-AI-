@@ -5,9 +5,9 @@ import Marquee from '@/components/magicui/marquee';
 import { CheckCircle2, Zap, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const WholesaleCatalogMarquee = () => {
+const WholesaleCatalogMarquee = ({ className }: { className?: string }) => {
     return (
-        <div className="w-full">
+        <div className={cn("w-full", className)}>
             {/* Transparent Marquee Content */}
             <Marquee pauseOnHover className="[--duration:60s]">
                 {siteCatalog.map((site, index) => (

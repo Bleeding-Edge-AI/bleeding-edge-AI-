@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Timer, Map, Crosshair, Zap, ArrowRight, MousePointer2 } from 'lucide-react';
+import { Timer, Map, Crosshair, Zap, ArrowRight } from 'lucide-react';
 
 import WholesaleCatalogMarquee from './WholesaleCatalogMarquee';
 
@@ -98,7 +98,7 @@ const ContentCard = ({
     title,
     description
 }: {
-    icon: React.ElementType,
+    icon: any,
     title: string,
     description: string
 }) => {
