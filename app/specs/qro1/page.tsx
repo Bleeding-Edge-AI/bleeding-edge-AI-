@@ -9,6 +9,7 @@ import {
     Cpu, Download
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function QRO1SpecsPage() {
     return (
@@ -28,16 +29,18 @@ export default function QRO1SpecsPage() {
                 {/* ------------------------------------------------------------------------- */}
                 {/* SECTION 1: HERO & IDENTITY */}
                 {/* ------------------------------------------------------------------------- */}
-                {/* ------------------------------------------------------------------------- */}
-                {/* SECTION 1: HERO & IDENTITY */}
-                {/* ------------------------------------------------------------------------- */}
                 <section className="relative px-6 py-32 border-b border-white/5 overflow-hidden">
                     {/* Background Image */}
                     <div className="absolute inset-0 z-0">
-                        <img
+                        <Image
                             src="/images/qro1/hero-bg.jpg"
                             alt="QRO1 Facility"
-                            className="w-full h-full object-cover"
+                            fill
+                            priority
+                            quality={100}
+                            className="object-cover"
+                            sizes="100vw"
+                            unoptimized // Force raw file delivery
                         />
                         {/* No overlays as requested */}
                     </div>
@@ -83,60 +86,71 @@ export default function QRO1SpecsPage() {
 
 
                 {/* ------------------------------------------------------------------------- */}
-                {/* SECTION 2: DIGITAL NEIGHBORHOOD */}
+                {/* SECTION 2: GOOGLE NEIGHBORHOOD (MAP) */}
                 {/* ------------------------------------------------------------------------- */}
                 <section className="container mx-auto px-6 py-24 border-b border-white/5">
-                    <div className="grid lg:grid-cols-2 gap-16 items-start max-w-6xl mx-auto">
+                    <div className="grid lg:grid-cols-3 gap-8 items-stretch max-w-7xl mx-auto">
 
-                        {/* LEFT: HEADER */}
-                        <div>
-                            <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                                <Globe className="w-8 h-8 text-red-500" />
-                                Strategic Node & <br /> Dark Fiber
-                            </h2>
-                            <p className="text-gray-400 mb-8 text-lg">
-                                Positioned at the core of Mexico's fiber ecosystem, QRO1 offers redundant paths to major terrestrial borders and direct links to subsea cable landing stations.
-                            </p>
+                        {/* LEFT COLUMN: STRATEGIC AMENITIES */}
+                        <div className="col-span-1 flex flex-col justify-center space-y-8">
+                            <div>
+                                <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
+                                    <Globe className="w-8 h-8 text-red-500" />
+                                    Strategic Location
+                                </h2>
+                                <p className="text-gray-400">
+                                    Located in the heart of Mexico's primary data center cluster, offering unmatched proximity to critical utility and transit infrastructure.
+                                </p>
+                            </div>
 
-                            <div className="space-y-6">
-                                <FeatureRow
-                                    title="Carrier Neutral Platform"
-                                    desc="Multiple active providers on-net for maximum routing flexibility."
+                            <div className="space-y-4">
+                                <LocationCard
+                                    label="Power Infrastructure"
+                                    value="1.2 km"
+                                    desc="to CFE Substation"
+                                    icon={Zap}
                                 />
-                                <FeatureRow
-                                    title="Cross-Connects"
-                                    desc="Rapid provisioning with ≤ 48H SLA guaranteed."
+                                <LocationCard
+                                    label="Dark Fiber Route"
+                                    value="Adjacent"
+                                    desc="to KCSM Right-of-Way"
+                                    icon={Network}
                                 />
-                                <FeatureRow
-                                    title="Northbound Connectivity"
-                                    desc="Seamless long-haul fiber routes directly to US egress points."
+                                <LocationCard
+                                    label="International Logistics"
+                                    value="20 min"
+                                    desc="to Querétaro Int'l Airport"
+                                    icon={Activity} // Using Activity as generic motion/transit if Plane not avail, or import Plane
+                                />
+                                <LocationCard
+                                    label="Digital Ecosystem"
+                                    value="Cluster"
+                                    desc="Microsoft, Oracle, Amazon nearby"
+                                    icon={Server}
                                 />
                             </div>
                         </div>
 
-                        {/* RIGHT: REACH */}
-                        <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
-                            <h3 className="text-xl font-bold mb-6 font-mono border-b border-white/10 pb-4">Performance Metrics</h3>
+                        {/* RIGHT COLUMN: GOOGLE MAP EMBED */}
+                        <div className="col-span-1 lg:col-span-2 h-[500px] relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 group">
+                            {/* MAP IFRAME */}
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14948.749688123166!2d-100.359196!3d20.559798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjDCsDMzJzM1LjMiTiAxMDDCsDIxJzMzLjEiVw!5e0!3m2!1sen!2smx!4v1700000000000!5m2!1sen!2smx"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                className="w-full h-full filter grayscale invert contrast-125 hover:grayscale-0 hover:invert-0 hover:contrast-100 transition-all duration-700 ease-in-out opacity-80 hover:opacity-100"
+                            />
 
-                            <div className="grid gap-6">
-                                <MetricCard
-                                    title="Ultra-Low Latency"
-                                    value="< 3 ms"
-                                    desc="Round trip time to Mexico City central business district."
-                                    icon={Clock}
-                                />
-                                <MetricCard
-                                    title="Cloud Ready"
-                                    value="Direct"
-                                    desc="Private on-ramps to major cloud availability zones."
-                                    icon={Network}
-                                />
-                                <MetricCard
-                                    title="Duct Control"
-                                    value="100%"
-                                    desc="Fully proprietary ducting system with diverse physical paths."
-                                    icon={Layers}
-                                />
+                            {/* VIGNETTE OVERLAY */}
+                            <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.9)] z-10" />
+
+                            {/* INTERACTION HINT */}
+                            <div className="absolute bottom-6 right-6 z-20 bg-black/80 backdrop-blur text-xs font-mono px-3 py-1 rounded-full border border-white/10 text-gray-400 pointer-events-none group-hover:opacity-0 transition-opacity">
+                                HOVER TO EXPLORE
                             </div>
                         </div>
 
@@ -297,6 +311,20 @@ function FeatureRow({ title, desc }: { title: string, desc: string }) {
             <div>
                 <h4 className="font-bold text-white mb-1">{title}</h4>
                 <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+            </div>
+        </div>
+    );
+}
+
+function LocationCard({ label, value, desc, icon: Icon }: any) {
+    return (
+        <div className="flex items-center gap-4 p-4 rounded-lg bg-neutral-900/40 border border-white/5 hover:bg-white/5 transition-colors">
+            <div className="p-2 bg-red-500/10 rounded-lg text-red-500">
+                <Icon className="w-5 h-5" />
+            </div>
+            <div>
+                <div className="text-white font-bold">{value} <span className="text-gray-500 font-normal text-sm lowercase">{desc}</span></div>
+                <div className="text-xs text-gray-500 uppercase tracking-wider font-mono mt-0.5">{label}</div>
             </div>
         </div>
     );
