@@ -42,7 +42,7 @@ const WholesaleScaleSection = () => {
                         <div>
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-mono font-bold uppercase tracking-widest mb-6">
                                 <Map className="w-3 h-3" />
-                                Wholesale Build-to-Suit
+                                Wholesale Single Tenant
                             </div>
                             <h2 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-[0.9]">
                                 Dedicated<br />

@@ -109,20 +109,22 @@ export default function ColocationPage() {
             {/* INFRASTRUCTURE SPECS BENTO (Technical Specs) */}
             <InfrastructureBento />
 
+            {/* DEPLOYMENT HUB (Replaces Instant Capacity) */}
+            <DeploymentHub />
+
             {/* WHOLESALE / HYPERSCALE SECTION (Moved above Instant Capacity) */}
             <WholesaleScaleSection />
 
-            {/* DEPLOYMENT HUB (Replaces Instant Capacity) */}
-            <DeploymentHub />
+
 
 
             {/* CTA */}
             <section className="relative z-10 py-20 px-6">
                 <div className="max-w-4xl mx-auto text-center border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-12 rounded-3xl relative overflow-hidden backdrop-blur-sm">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-red-900/10 blur-[80px] pointer-events-none"></div>
-                    <h2 className="text-3xl font-bold text-white mb-6">Need a custom cage?</h2>
+                    <h2 className="text-3xl font-bold text-white mb-6">Need Colo Space?</h2>
                     <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-                        We offer private suites and build-to-suit options for enterprise requirements.
+                        Get in touch with our sales team to learn more about our colocation options.
                     </p>
                     <Link
                         href="/contact"

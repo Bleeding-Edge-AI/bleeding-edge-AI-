@@ -15,9 +15,9 @@ export function DeploymentHub() {
                 <div className="text-center mb-16">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-4">
                         <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-                        <span>INSTANT CAPACITY</span>
+                        <span>STRATEGIC REACH</span>
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Instant Deployment. Strategic Reach.</h2>
+                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Instant Multitenant Capacity.</h2>
                     <p className="text-gray-400 max-w-2xl mx-auto text-lg">
                         Deploy 10kW to 50kW racks in our live locations. Select your density, cooling, and connectivity profiles.
                     </p>
@@ -80,9 +80,9 @@ function SiteCatalog() {
                 {/* Glow Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-                {/* Expandable Action Area */}
+                {/* Expandable Action Area (Desktop) */}
                 <motion.div
-                    className="bg-neutral-900 border-t border-white/10 overflow-hidden"
+                    className="hidden md:block bg-neutral-900 border-t border-white/10 overflow-hidden"
                     variants={{
                         hover: { height: 'auto', opacity: 1 },
                         initial: { height: 0, opacity: 0 }
@@ -96,6 +96,13 @@ function SiteCatalog() {
                         </Link>
                     </div>
                 </motion.div>
+
+                {/* Mobile Action Area (Always Visible) */}
+                <div className="md:hidden bg-neutral-900 border-t border-white/10 p-4 flex justify-end">
+                    <Link href="/specs/qro1" className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-neutral-200 transition-colors">
+                        <FileDown className="w-4 h-4" /> Request Spec Sheet
+                    </Link>
+                </div>
             </motion.div>
 
 
