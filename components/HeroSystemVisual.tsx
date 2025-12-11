@@ -40,7 +40,7 @@ export function HeroSystemVisual() {
 
 
                 {/* MIDDLE: RACK + PDUs */}
-                <div className="flex items-stretch gap-1">
+                <div className="flex items-stretch gap-3">
 
                     {/* LEFT PDU (Power A) */}
                     <VerticalPDU color="bg-yellow-500" />
@@ -55,43 +55,51 @@ export function HeroSystemVisual() {
 
 
                 {/* BOTTOM: COOLING PIPES */}
-                <div className="w-[140%] h-12 mt-0 flex justify-between items-center px-8 relative -z-10">
+                <div className="w-[140%] h-16 mt-0 flex justify-between items-center px-8 relative -z-10">
 
                     {/* Left Pipe (Cold In) */}
-                    <div className="flex-1 h-6 bg-gradient-to-b from-gray-300 via-white to-gray-400 rounded-full border border-gray-400 flex items-center px-2 relative overflow-hidden shadow-lg">
-                        {/* Metallic Shine */}
-                        <div className="absolute top-1 left-0 right-0 h-1 bg-white/50 blur-[1px]" />
+                    <div className="flex-1 h-10 bg-gradient-to-b from-slate-700 via-slate-500 to-slate-800 rounded-lg border-y border-slate-600 flex items-center px-2 relative overflow-hidden shadow-2xl">
+                        {/* Flanges/Joints */}
+                        <div className="absolute left-10 w-2 h-full bg-slate-400 opacity-50 border-x border-black/30" />
+                        <div className="absolute right-10 w-2 h-full bg-slate-400 opacity-50 border-x border-black/30" />
 
-                        {/* Flow Window */}
-                        <div className="w-full h-2 bg-black/80 rounded-full overflow-hidden relative">
+                        {/* Metallic Shine */}
+                        <div className="absolute top-1 left-0 right-0 h-1 bg-white/30 blur-[1px]" />
+
+                        {/* Flow Window - Thinner & Clean */}
+                        <div className="w-full h-3 bg-black/60 rounded-full overflow-hidden relative border border-white/5">
                             <motion.div
                                 className="absolute inset-0 bg-blue-500 hidden md:block will-change-transform"
                                 animate={{ x: ['-100%', '100%'] }}
-                                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                             />
                         </div>
                         {/* Connection to Rack */}
-                        <div className="absolute right-4 top-0 -translate-y-full w-4 h-8 bg-gradient-to-r from-gray-400 to-gray-200" />
+                        <div className="absolute right-12 top-0 -translate-y-full w-6 h-8 bg-gradient-to-r from-slate-600 to-slate-500 z-0" />
                     </div>
 
                     {/* Gap for Rack Base */}
-                    <div className="w-64"></div>
+                    <div className="w-[280px]"></div>
 
                     {/* Right Pipe (Hot Out) */}
-                    <div className="flex-1 h-6 bg-gradient-to-b from-gray-300 via-white to-gray-400 rounded-full border border-gray-400 flex items-center px-2 relative overflow-hidden shadow-lg">
+                    <div className="flex-1 h-10 bg-gradient-to-b from-slate-700 via-slate-500 to-slate-800 rounded-lg border-y border-slate-600 flex items-center px-2 relative overflow-hidden shadow-2xl">
+                        {/* Flanges/Joints */}
+                        <div className="absolute left-10 w-2 h-full bg-slate-400 opacity-50 border-x border-black/30" />
+                        <div className="absolute right-10 w-2 h-full bg-slate-400 opacity-50 border-x border-black/30" />
+
                         {/* Metallic Shine */}
-                        <div className="absolute top-1 left-0 right-0 h-1 bg-white/50 blur-[1px]" />
+                        <div className="absolute top-1 left-0 right-0 h-1 bg-white/30 blur-[1px]" />
 
                         {/* Flow Window */}
-                        <div className="w-full h-2 bg-black/80 rounded-full overflow-hidden relative">
+                        <div className="w-full h-3 bg-black/60 rounded-full overflow-hidden relative border border-white/5">
                             <motion.div
                                 className="absolute inset-0 bg-red-500/80 hidden md:block will-change-transform"
                                 animate={{ x: ['-100%', '100%'] }}
-                                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                             />
                         </div>
                         {/* Connection to Rack */}
-                        <div className="absolute left-4 top-0 -translate-y-full w-4 h-8 bg-gradient-to-r from-gray-400 to-gray-200" />
+                        <div className="absolute left-12 top-0 -translate-y-full w-6 h-8 bg-gradient-to-r from-slate-600 to-slate-500 z-0" />
                     </div>
 
                 </div>
@@ -99,7 +107,7 @@ export function HeroSystemVisual() {
             </div>
 
 
-            {/* FLOATING WIDGETS */}
+            {/* FLOATING WIDGETS (Unchanged) */}
 
             {/* 1. POWER WIDGET (Left) */}
             <div className="absolute top-1/2 left-0 sm:left-4 -translate-y-1/2 z-30">
@@ -140,26 +148,43 @@ export function HeroSystemVisual() {
 
 function VerticalPDU({ color, delay = 0 }: { color: string, delay?: number }) {
     return (
-        <div className="w-4 h-[500px] bg-neutral-900 border border-neutral-700 flex flex-col items-center py-1 gap-1 relative z-10">
-            {/* Status light */}
-            <div className={`w-2 h-2 rounded-full ${color.replace('bg-', 'text-')} bg-current shadow-[0_0_5px_currentColor] mb-2`} />
+        <div className="w-12 h-[500px] bg-neutral-900 border border-neutral-700 rounded-sm flex flex-col items-center py-4 gap-2 relative z-10 shadow-xl">
+            {/* Header Icon */}
+            <div className={`p-1.5 rounded-full bg-neutral-800 border ${color.replace('bg-', 'border-')} shadow-[0_0_8px_rgba(0,0,0,0.5)]`}>
+                <Zap className={`w-3 h-3 ${color.replace('bg-', 'text-')}`} />
+            </div>
 
-            {/* Internal Energy Flow */}
-            <div className="w-1 flex-1 bg-neutral-800 relative overflow-hidden rounded-full">
-                {/* Mobile: Static Fill */}
-                <div className={`absolute inset-0 ${color} opacity-70 md:hidden`} />
-                {/* Desktop: Animated Flow */}
+            {/* Status LED */}
+            <div className={`w-1.5 h-1.5 rounded-full ${color.replace('bg-', 'text-')} bg-current shadow-[0_0_5px_currentColor] my-1`} />
+
+            {/* The "Core" - Constant Pulsating Feed */}
+            <div className="w-3 flex-1 bg-neutral-950 relative overflow-hidden rounded-full mb-2 border border-white/5">
+                {/* Visual texture */}
+                <div className="absolute inset-0 z-10 opacity-20 bg-[linear-gradient(0deg,transparent_45%,#000_50%,transparent_55%)] bg-[size:100%_4px]" />
+
+                {/* The Glow */}
                 <motion.div
-                    className={`absolute inset-0 ${color} opacity-70 hidden md:block will-change-transform`}
-                    animate={{ top: ['-100%', '100%'] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', delay }}
+                    className={`absolute inset-0 ${color} blur-[2px]`}
+                    animate={{ opacity: [0.3, 0.8, 0.3] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay }}
+                />
+                {/* Solid Core */}
+                <motion.div
+                    className={`absolute inset-0 ${color}`}
+                    animate={{ opacity: [0.6, 1, 0.6] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay }}
                 />
             </div>
 
-            {/* Plugs connecting to rack (Decor) */}
-            <div className="absolute top-0 bottom-0 -right-1 w-1 flex flex-col justify-around">
-                {[...Array(20)].map((_, i) => (
-                    <div key={i} className="h-[1px] w-2 bg-neutral-600" />
+            {/* Branding/Footer */}
+            <div className="text-[8px] font-mono text-gray-600 rotate-90 whitespace-nowrap mb-6">
+                A-FEED
+            </div>
+
+            {/* Outlets (Visual Decor) */}
+            <div className="absolute top-16 bottom-16 -right-[1px] w-[2px] flex flex-col justify-around opacity-50">
+                {[...Array(12)].map((_, i) => (
+                    <div key={i} className="h-[2px] w-full bg-neutral-500" />
                 ))}
             </div>
         </div>
@@ -169,29 +194,37 @@ function VerticalPDU({ color, delay = 0 }: { color: string, delay?: number }) {
 
 function LegacyRackVisual() {
     return (
-        <div className="relative w-80 h-[500px] border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg p-2 shadow-2xl shadow-red-900/20 z-20">
-            {/* Top Glow Pulse (Reduced on mobile) */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-red-500/50 blur-[2px] animate-pulse md:animate-pulse" />
+        <div className="relative w-64 h-[500px] border border-white/10 bg-black/40 backdrop-blur-sm rounded-sm p-1.5 shadow-2xl shadow-black z-20">
+            {/* Glossy Reflection */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
 
             {/* Rack Units Grid */}
-            <div className="h-full w-full grid grid-rows-[repeat(42,minmax(0,1fr))] gap-[2px]">
+            <div className="h-full w-full grid grid-rows-[repeat(42,minmax(0,1fr))] gap-[1px] bg-neutral-900/50 ">
                 {/* Loop 42 times for rack units */}
                 {[...Array(42)].map((_, i) => (
-                    <div key={i} className="w-full bg-white/5 rounded-[1px] flex items-center justify-between px-2 relative group-hover:bg-white/10 transition-colors">
-                        <div className="w-1 h-1 rounded-full bg-gray-600" />
+                    <div key={i} className="w-full bg-neutral-800/80 rounded-[1px] flex items-center justify-between px-1.5 relative group-hover:bg-neutral-700 transition-colors border-b border-black/20">
+                        {/* Rack Screw holes */}
+                        <div className="w-0.5 h-full flex flex-col justify-between py-[1px]">
+                            <div className="w-0.5 h-0.5 rounded-full bg-neutral-600" />
+                            <div className="w-0.5 h-0.5 rounded-full bg-neutral-600" />
+                        </div>
 
-                        {/* Top Unit is Switch - Connected to Fiber Drop */}
-                        {i === 0 && (
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]" />
+                        {/* Blinkers */}
+                        {Math.random() > 0.7 && (
+                            <div className={`w-1 h-0.5 rounded-full ${Math.random() > 0.5 ? 'bg-green-500' : 'bg-blue-500'} animate-pulse shadow-[0_0_4px_currentColor] ml-auto mr-1`} />
                         )}
 
-                        <div className={`w-1 h-1 rounded-full ${Math.random() > 0.8 ? 'bg-red-500 animate-pulse' : 'bg-gray-700'}`} />
+                        {/* Rack Screw holes Right */}
+                        <div className="w-0.5 h-full flex flex-col justify-between py-[1px]">
+                            <div className="w-0.5 h-0.5 rounded-full bg-neutral-600" />
+                            <div className="w-0.5 h-0.5 rounded-full bg-neutral-600" />
+                        </div>
                     </div>
                 ))}
             </div>
 
             {/* Floor Reflection/Shadow */}
-            <div className="absolute -bottom-10 left-0 right-0 h-10 bg-gradient-to-b from-red-500/10 to-transparent blur-xl" />
+            <div className="absolute -bottom-12 left-2 right-2 h-4 bg-black/60 blur-lg rounded-[100%]" />
         </div>
     );
 }

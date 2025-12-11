@@ -34,7 +34,7 @@ const WholesaleScaleSection = () => {
             </div>
 
             {/* 2. Main Content Area (Centered) */}
-            <div className="relative z-10 flex-1 flex flex-col justify-center items-center w-full max-w-7xl mx-auto px-6 py-20">
+            <div className="relative z-10 flex-1 flex flex-col justify-center items-center w-full max-w-7xl mx-auto px-6 pt-20 pb-8">
                 <div className="grid lg:grid-cols-2 gap-16 items-center w-full">
 
                     {/* LEFT: Narrative */}
@@ -87,7 +87,7 @@ const WholesaleScaleSection = () => {
             </div>
 
             {/* 3. Bottom Marquee Section (Full Width) */}
-            <div className="relative z-10 w-full pb-8">
+            <div className="relative z-10 w-full">
                 <div className="w-full py-6">
                     <WholesaleCatalogMarquee />
                 </div>

@@ -8,17 +8,8 @@ import { cn } from '@/lib/utils';
 const WholesaleCatalogMarquee = ({ className }: { className?: string }) => {
     return (
         <div className={cn("w-full", className)}>
-            {/* Mobile: Horizontal Snap Scroll (Native Performance) */}
-            <div className="md:hidden w-full overflow-x-auto snap-x snap-mandatory flex gap-4 px-4 pb-4 no-scrollbar">
-                {siteCatalog.map((site, index) => (
-                    <div key={index} className="snap-center shrink-0">
-                        <SiteCard data={site} />
-                    </div>
-                ))}
-            </div>
-
-            {/* Desktop: Infinite Marquee (Visual Appeal) */}
-            <div className="hidden md:block will-change-transform">
+            {/* Unified Infinite Marquee for All Devices */}
+            <div className="will-change-transform">
                 <Marquee pauseOnHover className="[--duration:60s]">
                     {siteCatalog.map((site, index) => (
                         <SiteCard key={index} data={site} />

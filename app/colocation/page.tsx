@@ -94,7 +94,8 @@ export default function ColocationPage() {
 
                 {/* RIGHT VISUAL: HERO SYSTEM VISUAL (Hardware + Config) */}
                 <div className="h-full w-full relative flex items-center justify-center">
-                    <HeroSystemVisual />
+                    {/* <HeroSystemVisual /> -- Saved for future V2 */}
+                    <HeroDashboard />
                 </div>
             </section>
 
