@@ -8,22 +8,23 @@ const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || '';
 const genAI = new GoogleGenerativeAI(apiKey);
 const resend = new Resend(process.env.RESEND_API_KEY || 're_123');
 
-// Tool Definition
+// Tool Definition (Updated for Hybrid Model extraction)
 const tools: Tool[] = [
     {
         functionDeclarations: [
             {
-                name: "send_lead_to_sales",
-                description: "Send a sales lead email when a user provides their email address and expresses interest.",
+                name: "capture_lead",
+                description: "Extract lead details when the user provides them. Always call this if the email is provided.",
                 parameters: {
                     type: SchemaType.OBJECT,
                     properties: {
-                        user_email: { type: SchemaType.STRING, description: "The user's email address." },
-                        user_name: { type: SchemaType.STRING, description: "The user's name if provided." },
-                        lead_intent: { type: SchemaType.STRING, description: "What the user is interested in." },
-                        summary: { type: SchemaType.STRING, description: "A brief summary of the conversation." }
+                        email: { type: SchemaType.STRING, description: "The user's email address." },
+                        name: { type: SchemaType.STRING, description: "The user's name if provided." },
+                        company: { type: SchemaType.STRING, description: "The user's company name if provided." },
+                        service_requested: { type: SchemaType.STRING, description: "The service they are interested in (e.g., 'Build', 'Colo', 'AI Cloud')." },
+                        summary: { type: SchemaType.STRING, description: "Brief summary of the request." }
                     },
-                    required: ["user_email", "lead_intent"]
+                    required: ["email"]
                 }
             }
         ]
@@ -32,31 +33,72 @@ const tools: Tool[] = [
 
 export async function POST(req: NextRequest) {
     try {
-        const { message, history, sessionId } = await req.json();
+        const { message, history, leadId } = await req.json();
 
-        if (!sessionId) {
-            return NextResponse.json({ error: "Session ID required" }, { status: 400 });
-        }
-
-        // 1. Log User Message to Supabase
+        // ---------------------------------------------------------
+        // 1. Session Initialization / Logging (Hybrid Model)
+        // ---------------------------------------------------------
+        let currentLeadId = leadId;
         let dbStatus = 'pending';
         let dbError = null;
 
-        const { error: insertError } = await supabase.from('messages').insert({
-            session_id: sessionId,
-            role: 'user',
-            content: message
-        });
+        const userMessageObject = { role: 'user', content: message, timestamp: new Date().toISOString() };
 
-        if (insertError) {
-            console.error("Supabase Log Error:", insertError);
+        try {
+            if (!currentLeadId) {
+                // NEW SESSION: Insert new row
+                const { data, error } = await supabase
+                    .from('leads')
+                    .insert({
+                        transcript: [userMessageObject],
+                        email: null
+                    })
+                    .select('id')
+                    .single();
+
+                if (error) throw error;
+                currentLeadId = data.id;
+                dbStatus = 'success (new)';
+            } else {
+                // EXISTING SESSION: Update row, append to transcript
+                // We use a raw SQL query or fetch-modify-update pattern. 
+                // Using Postgres JSONB concat operator ( || ) via rpc would be atomic, but simple fetch-update is fine for this traffic.
+                // Or simpler: supabase.rpc() if we had a function.
+                // Let's do a Fetch -> Append -> Update for clarity and simplicity without custom SQL functions.
+
+                const { data: leadData, error: fetchError } = await supabase
+                    .from('leads')
+                    .select('transcript')
+                    .eq('id', currentLeadId)
+                    .single();
+
+                if (fetchError) {
+                    // Fallback: If ID not found, treat as new (safety net)
+                    const { data: newData, error: newError } = await supabase
+                        .from('leads')
+                        .insert({ transcript: [userMessageObject] }).select('id').single();
+                    if (newError) throw newError;
+                    currentLeadId = newData.id;
+                } else {
+                    const newTranscript = [...(leadData.transcript || []), userMessageObject];
+                    const { error: updateError } = await supabase
+                        .from('leads')
+                        .update({ transcript: newTranscript })
+                        .eq('id', currentLeadId);
+                    if (updateError) throw updateError;
+                }
+                dbStatus = 'success (updated)';
+            }
+        } catch (e: any) {
+            console.error("DB Log Error:", e);
             dbStatus = 'error';
-            dbError = insertError.message;
-        } else {
-            dbStatus = 'success';
+            dbError = e.message;
         }
 
-        // System Instruction (Concise + Email Capture)
+
+        // ---------------------------------------------------------
+        // 2. Gemini AI Processing
+        // ---------------------------------------------------------
         const systemInstruction = `
       You are 'Edge', an AI Sales Engineer for Bleeding Edge Infrastructure.
       
@@ -71,26 +113,13 @@ export async function POST(req: NextRequest) {
       User: "I need H100s."
       You: "I can help with H100 availability. What is your business email address?"
 
-      Once they provide it, you MUST IMMEDIATELY call the 'send_lead_to_sales' tool.
+      Once they provide data, use the 'capture_lead' tool.
       
       AFTER calling the tool:
       1. Confirm to the user that the request has been sent.
-      2. IMMEDIATE NEXT STEP (Identity Verification via Domain Inference):
-         - Check the email domain provided.
-         - IF specific corporate domain (e.g. '@nvidia.com', '@google.com'): Say "I see you are with [Company Name]. Is that correct?"
-         - IF generic domain (e.g. '@gmail.com', '@yahoo.com'): Say "Thanks. What company are you representing?"
-      
-      3. CRITICAL: Do NOT ask for project details (qualifying questions) in this same message. Wait for their confirmation of Company first.
-      
-      SUBSEQUENT TURNS (Natural Conversation Flow):
-      - If user confirms Company -> THEN ask the qualification questions based on their original intent.
-        - If Intent was "Spec Sheet" -> Ask: "Are you looking for high-density racks (50kW+), or standard colocation?"
-        - If Intent was "Build" -> Ask: "Do you have a land site selected, or are you looking for our inventory?"
-      
-      Keep it one step at a time. Do not overwhelm the user.
+      2. Ask ONE qualification question based on intent (e.g. density for colo, volume for build).
     `;
 
-        // Gemini Chat
         const chatHistory = history.map((msg: any) => ({
             role: msg.role === 'user' ? 'user' : 'model',
             parts: [{ text: msg.text }]
@@ -110,82 +139,81 @@ export async function POST(req: NextRequest) {
 
         let finalResponseText = response.text();
 
-        // Handle Tool Call (Lead Capture)
-        if (call && call.name === "send_lead_to_sales") {
-            const { user_email, user_name, lead_intent, summary } = call.args as any;
-            console.log("dispatching-lead", { user_email, lead_intent });
+        // ---------------------------------------------------------
+        // 3. Tool Handling (Extraction)
+        // ---------------------------------------------------------
+        if (call && call.name === "capture_lead") {
+            const { email, name, company, service_requested, summary } = call.args as any;
+            console.log("Extracting Lead Data:", call.args);
 
-            // A. Upsert Lead
-            const { data: leadData, error: leadError } = await supabase
-                .from('leads')
-                .upsert({
-                    email: user_email,
-                    company: null, // Initial capture might not have company yet
-                    status: 'NEW',
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'email' })
-                .select()
-                .single();
+            // A. Update Lead Metadata in DB
+            if (currentLeadId) {
+                const { error: upError } = await supabase
+                    .from('leads')
+                    .update({
+                        email: email,
+                        name: name,
+                        company: company,
+                        service_requested: service_requested,
+                        status: 'CAPTURED'
+                    })
+                    .eq('id', currentLeadId);
 
-            if (leadError) console.error("Supabase Lead Error:", leadError);
-
-            // B. Link Session Messages to this Lead
-            if (leadData) {
-                await supabase
-                    .from('messages')
-                    .update({ lead_id: leadData.id })
-                    .eq('session_id', sessionId);
+                if (upError) console.error("Lead Update Error:", upError);
             }
 
-            // C. Send Email
+            // B. Send Email Notification
             if (process.env.RESEND_API_KEY) {
-                const transcriptHtml = history.map((msg: any) =>
-                    `<p><strong>${msg.role === 'user' ? 'User' : 'Edge'}:</strong> ${msg.text}</p>`
-                ).join('') + `<p><strong>User:</strong> ${message}</p>`;
-
                 await resend.emails.send({
                     from: 'Bleeding Edge AI <onboarding@resend.dev>',
                     to: ['sales@bleedingedge.group'],
-                    subject: `[LEAD] ${lead_intent}`,
+                    subject: `[LEAD] ${service_requested || 'Inquiry'}`,
                     html: `
-                        <h1>New Lead Captured</h1>
-                        <p><strong>Email:</strong> ${user_email}</p>
-                        <p><strong>Database ID:</strong> ${leadData?.id || 'Pending'}</p>
-                        <p><strong>Intent:</strong> ${lead_intent}</p>
-                        <hr/>
-                        <h3>Transcript</h3>
-                        ${transcriptHtml}
+                        <h1>Lead Captured</h1>
+                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>Name:</strong> ${name || 'N/A'}</p>
+                        <p><strong>Company:</strong> ${company || 'N/A'}</p>
+                        <p><strong>Service:</strong> ${service_requested || 'N/A'}</p>
+                        <p><strong>DB ID:</strong> ${currentLeadId}</p>
                     `
                 }).catch(e => console.error("Email failed:", e));
             }
 
-            // D. Resume Chat
             const toolResponsePart = {
                 functionResponse: {
-                    name: "send_lead_to_sales",
-                    response: { status: "success", message: "Lead saved to database and email sent." }
+                    name: "capture_lead",
+                    response: { status: "success", message: "Details saved." }
                 }
             };
             const finalResult = await chat.sendMessage([toolResponsePart]);
             finalResponseText = finalResult.response.text();
         }
 
-        // 2. Log Model Response to Supabase
-        await supabase.from('messages').insert({
-            session_id: sessionId,
-            role: 'assistant',
-            content: finalResponseText
-        });
+        // ---------------------------------------------------------
+        // 4. Log AI Response (Append to Transcript)
+        // ---------------------------------------------------------
+        if (currentLeadId && dbStatus !== 'error') {
+            const aiMessageObject = { role: 'assistant', content: finalResponseText, timestamp: new Date().toISOString() };
 
+            // Fetch current again to append (safe for low volume). 
+            // Ideally we'd optimize to just one update at the end for both user+ai messages, but logic is split.
+            // Let's just do an atomic append if possible, but for JSONB here we re-fetch.
+            const { data: leadData } = await supabase.from('leads').select('transcript').eq('id', currentLeadId).single();
+            if (leadData) {
+                const newTranscript = [...(leadData.transcript || []), aiMessageObject];
+                await supabase.from('leads').update({ transcript: newTranscript }).eq('id', currentLeadId);
+            }
+        }
 
         return NextResponse.json({
             text: finalResponseText,
+            leadId: currentLeadId,
             db_status: dbStatus,
             db_error: dbError
         });
 
     } catch (error: any) {
-        console.error("Gemini/Supabase Error:", error);
+        console.error("API Error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Icons } from './Icons';
 import { ChatMessage } from '../types';
 import { useChat } from '@/app/context/ChatContext';
-import { v4 as uuidv4 } from 'uuid';
 
 export const AIChat: React.FC = () => {
   const { isOpen, openChat, closeChat, activeIntent, clearIntent } = useChat();
@@ -14,7 +13,7 @@ export const AIChat: React.FC = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string>('');
+  const [leadId, setLeadId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -22,14 +21,7 @@ export const AIChat: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // On Mount: Initialize Session ID
   useEffect(() => {
-    let sid = localStorage.getItem('chatSessionId');
-    if (!sid) {
-      sid = uuidv4();
-      localStorage.setItem('chatSessionId', sid);
-    }
-    setSessionId(sid);
     scrollToBottom();
   }, [messages, isOpen]);
 
@@ -61,17 +53,12 @@ export const AIChat: React.FC = () => {
   const processMessage = async (text: string, currentHistory: ChatMessage[]) => {
     setIsLoading(true);
     try {
-      if (!sessionId) {
-        console.error("Session ID not initialized");
-        return;
-      }
-
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          sessionId: sessionId,
+          leadId: leadId, // Send current leadId (null for first message)
           // Gemini History must start with User. 
           // 1. Filter out the Welcome Message (idx 0).
           // 2. Slice off the LAST message (which is 'text' / the input we are sending now) to prevent duplication in Gemini's context.
@@ -92,12 +79,15 @@ export const AIChat: React.FC = () => {
 
       const data = await response.json();
 
+      // Update Lead ID if provided (First interaction)
+      if (data.leadId) {
+        setLeadId(data.leadId);
+      }
+
       let displayText = data.text;
       // DEBUG: Append Database Status if failed or success (for visibility)
       if (data.db_status === 'error') {
         displayText += `\n\n[System Alert: Database Save Failed - ${data.db_error}]`;
-      } else if (data.db_status === 'success') {
-        // displayText += `\n\n[System: Message Saved to DB]`; // Comment out if too noisy, but user requested it.
       }
 
       const modelMsg: ChatMessage = { role: 'model', text: displayText, timestamp: new Date() };
