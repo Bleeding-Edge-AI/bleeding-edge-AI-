@@ -65,7 +65,13 @@ export async function POST(req: NextRequest) {
       You: "Excellent choice. I can help you with that deployment. Could you please provide your business email address so I can send you the capacity details?"
 
       Once they provide it, you MUST IMMEDIATELY call the 'send_lead_to_sales' tool.
-      After calling the tool, confirm to the user that the information is on its way.
+      
+      AFTER calling the tool:
+      1. Confirm to the user that the request has been sent.
+      2. If you can infer their Name and Company from the email (e.g. bernardo@google.com -> Name: Bernardo, Company: Google), ask them to confirm if that is correct. If you cannot infer it, ask them for their name and company.
+      3. Ask a follow-up qualification question to keep the conversation going, such as "Could you tell me a bit more about the scale of deployment you are looking for?" or "Are you interested in liquid cooling solutions?".
+      
+      Do NOT stop the conversation. Keep engaging.
     `;
 
         // Construct history for Gemini
@@ -96,6 +102,11 @@ export async function POST(req: NextRequest) {
                 // Execute Email Sending via Resend
                 console.log("dispatching-email", { user_email, lead_intent });
 
+                // Construct Chat Transcript for Email
+                const transcriptHtml = history.map((msg: any) =>
+                    `<p><strong>${msg.role === 'user' ? 'User' : 'Edge'}:</strong> ${msg.text}</p>`
+                ).join('') + `<p><strong>User:</strong> ${message}</p>`;
+
                 try {
                     if (process.env.RESEND_API_KEY) {
                         await resend.emails.send({
@@ -110,6 +121,9 @@ export async function POST(req: NextRequest) {
                         <hr/>
                         <h3>Summary</h3>
                         <p>${summary || 'No summary provided.'}</p>
+                        <hr/>
+                        <h3>Full Chat Transcript</h3>
+                        ${transcriptHtml}
                     `
                         });
                     } else {
