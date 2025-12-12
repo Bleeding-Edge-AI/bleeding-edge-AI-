@@ -120,19 +120,18 @@ export async function POST(req: NextRequest) {
                 }
 
                 // Return tool output to model so it can generate final response
-                const toolResult = {
-                    functionResponses: [{
-                        functionResponse: {
-                            name: "send_lead_to_sales",
-                            response: { status: "success", message: "Email dispatched successfully" }
-                        }
-                    }]
+                // Fix: The SDK expects an array of parts, and 'functionResponse' is a direct property of a Part.
+                const toolResponsePart = {
+                    functionResponse: {
+                        name: "send_lead_to_sales",
+                        response: { status: "success", message: "Email dispatched successfully" }
+                    }
                 };
 
                 // Re-prompting model with tool output:
                 const finalResult = await chat.sendMessage([
-                    toolResult
-                ] as any);
+                    toolResponsePart
+                ]);
 
                 return NextResponse.json({ text: finalResult.response.text() });
             }
