@@ -21,8 +21,18 @@ export const BuildHero: React.FC = () => {
                 style={{ scale, y }}
                 className="absolute inset-0 z-0"
             >
-                {/* Placeholder for video/image - using a high-quality abstract concrete/tech texture */}
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center grayscale brightness-50 contrast-125" />
+                {/* Video Background */}
+                <video
+                    autoPlay
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover grayscale brightness-50 contrast-125"
+                    onEnded={(e) => {
+                        e.currentTarget.pause();
+                    }}
+                >
+                    <source src="/Cinematic_concrete.mp4" type="video/mp4" />
+                </video>
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
                 {/* Overlay Grid */}
                 <div className="absolute inset-0 bg-[linear-gradient(transparent_1px,#0a0a0a_1px),linear-gradient(90deg,transparent_1px,#0a0a0a_1px)] bg-[size:50px_50px] opacity-20" />
