@@ -178,19 +178,19 @@ export const AdoptionDashboard: React.FC = () => {
                         icon={Users}
                         title="Role-Specific Workshops"
                         delay={0}
-                        className="absolute -top-12 -left-8 md:-left-24 z-20"
+                        className="absolute -top-12 left-0 md:-left-24 z-20"
                     />
                     <FloatingCard
                         icon={CheckCircle}
                         title="Gamified Onboarding"
                         delay={1.5}
-                        className="absolute top-1/2 -right-8 md:-right-24 z-20"
+                        className="absolute top-1/2 right-0 md:-right-24 z-20"
                     />
                     <FloatingCard
                         icon={MessageSquare}
                         title="Feedback Loops"
                         delay={0.8}
-                        className="absolute -bottom-8 left-12 md:left-24 z-20"
+                        className="absolute -bottom-8 left-0 md:left-24 z-20"
                     />
 
                 </div>

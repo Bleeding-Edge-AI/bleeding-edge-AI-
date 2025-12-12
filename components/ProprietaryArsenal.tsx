@@ -45,7 +45,7 @@ export const ProprietaryArsenal: React.FC = () => {
     const [activeTab, setActiveTab] = useState(0);
 
     return (
-        <section className="py-32 px-6 bg-neutral-900 border-t border-white/5 relative overflow-hidden">
+        <section className="py-16 md:py-32 px-6 bg-neutral-900 border-t border-white/5 relative overflow-hidden">
             {/* Simple Background Pattern */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-800 via-neutral-900 to-black opacity-40"></div>
 
@@ -64,7 +64,7 @@ export const ProprietaryArsenal: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start h-[600px]">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start h-auto lg:h-[600px]">
 
                     {/* LEFT COLUMN: TABS */}
                     <div className="lg:col-span-5 flex flex-col gap-4">

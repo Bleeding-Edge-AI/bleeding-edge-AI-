@@ -5,9 +5,9 @@ import { ArrowRight } from 'lucide-react';
 
 export const CustomBuildCTA: React.FC = () => {
     return (
-        <section className="py-32 px-6 bg-white text-neutral-950">
+        <section className="py-16 md:py-32 px-6 bg-white text-neutral-950">
             <div className="max-w-4xl mx-auto text-center">
-                <h2 className="text-5xl md:text-6xl font-display font-bold mb-6">Need Hyperscale?</h2>
+                <h2 className="text-4xl md:text-6xl font-display font-bold mb-6">Need Hyperscale?</h2>
                 <p className="text-xl md:text-2xl text-neutral-600 mb-12 max-w-2xl mx-auto">
                     For multi-MW campuses, we deploy custom-designed footprints using our modular supply chain.
                 </p>

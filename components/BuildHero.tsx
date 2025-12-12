@@ -49,7 +49,7 @@ export const BuildHero: React.FC = () => {
                     transition={{ duration: 1.5, ease: "circOut" }}
                     className="mb-8"
                 >
-                    <h1 className="text-6xl md:text-8xl font-black font-display tracking-tighter text-white mb-2 uppercase">
+                    <h1 className="text-4xl md:text-6xl lg:text-8xl font-black font-display tracking-tighter text-white mb-2 uppercase">
                         Own your data center.
                         <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-900">

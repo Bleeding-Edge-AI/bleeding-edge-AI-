@@ -77,7 +77,7 @@ export const ManufacturingAdvantage: React.FC = () => {
 
                     {/* Right Column: Exploded View Visualization */}
                     <div className="relative h-[600px] flex items-center justify-center perspective-[2000px]">
-                        <div className="relative w-80 h-96 transform-style-3d rotate-x-60 rotate-z-45">
+                        <div className="relative w-64 md:w-80 h-96 transform-style-3d rotate-x-60 rotate-z-45">
 
                             {/* Layer 1: Top (Concrete Shell) */}
                             <motion.div

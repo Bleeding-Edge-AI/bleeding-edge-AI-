@@ -70,7 +70,7 @@ export const AiOfferingScroll: React.FC = () => {
             <div className="sticky top-0 h-screen overflow-hidden flex flex-col lg:flex-row">
 
                 {/* --- LEFT COLUMN: CONTENT --- */}
-                <div className="w-full lg:w-1/2 h-1/2 lg:h-full flex items-center justify-center p-8 lg:p-24 relative z-20 bg-neutral-950/80 backdrop-blur-sm lg:bg-transparent">
+                <div className="w-full lg:w-1/2 h-1/2 lg:h-full flex items-center justify-center p-6 md:p-8 lg:p-24 relative z-20 bg-neutral-950/80 backdrop-blur-sm lg:bg-transparent">
                     <div className="relative w-full max-w-xl">
 
                         {/* Phase 1 Text: Diagnosis */}
@@ -81,7 +81,7 @@ export const AiOfferingScroll: React.FC = () => {
                             <div className="font-mono text-red-500 text-sm mb-4 tracking-widest uppercase border-b border-red-900/30 pb-2 inline-block">
                                 Phase {offeringData.diagnosis.number}
                             </div>
-                            <h2 className="text-5xl lg:text-7xl font-display font-light text-white mb-8 tracking-tighter">
+                            <h2 className="text-3xl md:text-5xl lg:text-7xl font-display font-light text-white mb-4 lg:mb-8 tracking-tighter">
                                 {offeringData.diagnosis.title.split(' ')[0]} <br />
                                 <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-900">
                                     {offeringData.diagnosis.title.split(' ')[1]}
@@ -108,7 +108,7 @@ export const AiOfferingScroll: React.FC = () => {
                             <div className="font-mono text-cyan-500 text-sm mb-4 tracking-widest uppercase border-b border-cyan-900/30 pb-2 inline-block">
                                 Phase {offeringData.implementation.number}
                             </div>
-                            <h2 className="text-5xl lg:text-7xl font-display font-light text-white mb-8 tracking-tighter">
+                            <h2 className="text-3xl md:text-5xl lg:text-7xl font-display font-light text-white mb-4 lg:mb-8 tracking-tighter">
                                 {offeringData.implementation.title.split(' ')[0]} <br />
                                 <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">
                                     {offeringData.implementation.title.split(' ')[1]}
@@ -135,7 +135,7 @@ export const AiOfferingScroll: React.FC = () => {
                             <div className="font-mono text-emerald-500 text-sm mb-4 tracking-widest uppercase border-b border-emerald-900/30 pb-2 inline-block">
                                 Phase {offeringData.fde.number}
                             </div>
-                            <h2 className="text-5xl lg:text-7xl font-display font-light text-white mb-8 tracking-tighter">
+                            <h2 className="text-3xl md:text-5xl lg:text-7xl font-display font-light text-white mb-4 lg:mb-8 tracking-tighter">
                                 Forward <br />
                                 <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-green-400">
                                     Deployed Eng.

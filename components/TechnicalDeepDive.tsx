@@ -65,7 +65,7 @@ export const TechnicalDeepDive: React.FC = () => {
                     <div className="inline-block px-3 py-1 bg-red-900/30 border border-red-900/50 rounded-full text-red-500 font-mono text-xs mb-6 tracking-widest uppercase">
                         Fortress Grade Infrastructure
                     </div>
-                    <h2 className="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase leading-[0.9]">
+                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black text-white mb-6 uppercase leading-[0.9]">
                         Not a Container. <br />
                         <span className="text-neutral-500">A Bunker.</span>
                     </h2>

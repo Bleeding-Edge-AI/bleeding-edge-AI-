@@ -37,7 +37,7 @@ export const AiInfiniteMatrix: React.FC = () => {
             <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent z-20 pointer-events-none" />
 
             {/* LEFT COLUMN: Horizontal Foundation (Fixed) */}
-            <div className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative z-10 bg-neutral-950/80 backdrop-blur-sm border-b md:border-b-0 md:border-r border-white/5">
+            <div className="w-full md:w-1/2 p-6 md:p-24 flex flex-col justify-center relative z-10 bg-neutral-950/80 backdrop-blur-sm border-b md:border-b-0 md:border-r border-white/5">
                 <div className="mb-16">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-900/30 border border-indigo-500/30 text-indigo-400 font-mono text-xs mb-6 uppercase tracking-widest">
                         <Layers className="w-3 h-3" />
@@ -72,7 +72,7 @@ export const AiInfiniteMatrix: React.FC = () => {
             </div>
 
             {/* RIGHT COLUMN: Vertical Infinite Stream */}
-            <div className="w-full md:w-1/2 h-[80vh] md:h-screen relative overflow-hidden bg-neutral-950/50">
+            <div className="w-full md:w-1/2 h-[50vh] md:h-screen relative overflow-hidden bg-neutral-950/50">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-transparent to-transparent opacity-50" />
 
                 {/* Marquee Container */}

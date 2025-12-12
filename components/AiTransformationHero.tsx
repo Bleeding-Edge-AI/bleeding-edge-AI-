@@ -52,7 +52,7 @@ export const AiTransformationHero: React.FC = () => {
                         <span className="text-xs font-mono text-brand-300 uppercase tracking-widest">Engineering Services</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-display font-bold text-white leading-[1.1] mb-6">
+                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold text-white leading-[1.1] mb-6">
                         Engineering the <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-indigo-400 to-purple-400">AI-Native Enterprise.</span>
                     </h1>
@@ -81,7 +81,7 @@ export const AiTransformationHero: React.FC = () => {
                 </motion.div>
 
                 {/* RIGHT COLUMN: Digital Command Center */}
-                <div className="relative h-[600px] w-full flex items-center justify-center perspective-[1000px]">
+                <div className="relative h-[400px] md:h-[600px] w-full flex items-center justify-center perspective-[1000px] scale-[0.55] md:scale-100 origin-center">
                     <CommandCenterVisual mouseX={mouseX} mouseY={mouseY} />
                 </div>
 
