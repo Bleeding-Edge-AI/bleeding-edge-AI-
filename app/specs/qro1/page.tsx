@@ -135,7 +135,7 @@ export default function QRO1SpecsPage() {
                         <div className="col-span-1 lg:col-span-2 h-[500px] relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 group">
                             {/* MAP IFRAME */}
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14948.749688123166!2d-100.359196!3d20.559798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjDCsDMzJzM1LjMiTiAxMDDCsDIxJzMzLjEiVw!5e0!3m2!1sen!2smx!4v1700000000000!5m2!1sen!2smx"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3734.505500609605!2d-100.2536979241851!3d20.53500399878206!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d369c7ee179587%3A0xac4f4bcb60ed336d!2sBleeding%20Edge%20Qro%201!5e0!3m2!1sen!2smx!4v1714000000000!5m2!1sen!2smx"
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}
