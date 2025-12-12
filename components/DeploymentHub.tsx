@@ -48,16 +48,9 @@ export function DeploymentHub() {
     );
 }
 
-import { useChat } from '@/app/context/ChatContext';
+
 
 function SiteCatalog() {
-    const { openChatWithIntent } = useChat();
-
-    const handleReqSpecs = (e: React.MouseEvent) => {
-        e.preventDefault();
-        openChatWithIntent("I'd like to request the spec sheet for QRO1.");
-    };
-
     return (
         <div className="flex flex-col gap-4">
             <h3 className="text-xl font-bold text-white mb-2 font-serif">Available Locations</h3>
@@ -100,17 +93,17 @@ function SiteCatalog() {
                     style={{ height: 0, opacity: 0 }} // Start hidden
                 >
                     <div className="p-4 flex justify-end">
-                        <button onClick={handleReqSpecs} className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-neutral-200 transition-colors">
+                        <Link href="/specs/qro1" className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-neutral-200 transition-colors">
                             <FileDown className="w-4 h-4" /> Request Spec Sheet
-                        </button>
+                        </Link>
                     </div>
                 </motion.div>
 
                 {/* Mobile Action Area (Always Visible) */}
                 <div className="md:hidden bg-neutral-900 border-t border-white/10 p-4 flex justify-end">
-                    <button onClick={handleReqSpecs} className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-neutral-200 transition-colors">
+                    <Link href="/specs/qro1" className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-neutral-200 transition-colors">
                         <FileDown className="w-4 h-4" /> Request Spec Sheet
-                    </button>
+                    </Link>
                 </div>
             </motion.div>
 
