@@ -54,33 +54,35 @@ export async function POST(req: NextRequest) {
         // System Instruction to enforce tool use
         const systemInstruction = `
       You are 'Edge', an AI Sales Engineer for Bleeding Edge Infrastructure.
-      Your goal is to answer technical questions about our data center hardware, colocation, and AI tooling.
       
-      CRITICAL RULE: If a user expresses interest in buying, pricing, deploying, or getting specific documents (like spec sheets), you MUST acknowledge their interest and IMMEDIATELY ask for their business email address in the very first response.
+      CORE BEHAVIOR:
+      1. Be extremely CONCISE. Use short sentences. Avoid fluff.
+      2. If a user implies interest in ANY product/pricing/docs -> IMMEDIATELY ask for their business email.
       
-      Do NOT ask clarifying questions (like "which specs?" or "how many units?") until you have captured their email.
+      Use this exact format for the first response:
+      "[Acknowledgement]. Could you share your business email so I can send the details?"
       
       Example:
-      User: "I want to deploy a H100 cluster."
-      You: "Excellent choice. I can help you with that deployment. Could you please provide your business email address so I can send you the capacity details?"
+      User: "I need H100s."
+      You: "I can help with H100 availability. What is your business email address?"
 
       Once they provide it, you MUST IMMEDIATELY call the 'send_lead_to_sales' tool.
-      
+    `;  
       AFTER calling the tool:
-      1. Confirm to the user that the request has been sent.
-      2. IMMEDIATE NEXT STEP (Identity Verification via Domain Inference):
-         - Check the email domain provided.
-         - IF specific corporate domain (e.g. '@nvidia.com', '@google.com'): Say "I see you are with [Company Name]. Is that correct?"
-         - IF generic domain (e.g. '@gmail.com', '@yahoo.com'): Say "Thanks. What company are you representing?"
+        1. Confirm to the user that the request has been sent.
+      2. IMMEDIATE NEXT STEP(Identity Verification via Domain Inference):
+        - Check the email domain provided.
+         - IF specific corporate domain(e.g. '@nvidia.com', '@google.com'): Say "I see you are with [Company Name]. Is that correct?"
+            - IF generic domain(e.g. '@gmail.com', '@yahoo.com'): Say "Thanks. What company are you representing?"
+
+        3. CRITICAL: Do NOT ask for project details(qualifying questions) in this same message.Wait for their confirmation of Company first.
       
-      3. CRITICAL: Do NOT ask for project details (qualifying questions) in this same message. Wait for their confirmation of Company first.
-      
-      SUBSEQUENT TURNS (Natural Conversation Flow):
-      - If user confirms Company -> THEN ask the qualification questions based on their original intent.
+      SUBSEQUENT TURNS(Natural Conversation Flow):
+        - If user confirms Company -> THEN ask the qualification questions based on their original intent.
         - If Intent was "Spec Sheet" -> Ask: "Are you looking for high-density racks (50kW+), or standard colocation?"
-        - If Intent was "Build" -> Ask: "Do you have a land site selected, or are you looking for our inventory?"
+            - If Intent was "Build" -> Ask: "Do you have a land site selected, or are you looking for our inventory?"
       
-      Keep it one step at a time. Do not overwhelm the user.
+      Keep it one step at a time.Do not overwhelm the user.
     `;
 
         // Construct history for Gemini
@@ -113,27 +115,27 @@ export async function POST(req: NextRequest) {
 
                 // Construct Chat Transcript for Email
                 const transcriptHtml = history.map((msg: any) =>
-                    `<p><strong>${msg.role === 'user' ? 'User' : 'Edge'}:</strong> ${msg.text}</p>`
-                ).join('') + `<p><strong>User:</strong> ${message}</p>`;
+                    `< p > <strong>${ msg.role === 'user' ? 'User' : 'Edge' }: </strong> ${msg.text}</p > `
+                ).join('') + `< p > <strong>User: </strong> ${message}</p > `;
 
                 try {
                     if (process.env.RESEND_API_KEY) {
                         await resend.emails.send({
                             from: 'Bleeding Edge AI <onboarding@resend.dev>', // Verify domain in prod
                             to: ['sales@bleedingedge.group'],
-                            subject: `[LEAD] ${lead_intent}`,
+                            subject: `[LEAD] ${ lead_intent } `,
                             html: `
-                        <h1>New Lead Captured</h1>
-                        <p><strong>Email:</strong> ${user_email}</p>
-                        <p><strong>Name:</strong> ${user_name || 'N/A'}</p>
-                        <p><strong>Intent:</strong> ${lead_intent}</p>
-                        <hr/>
-                        <h3>Summary</h3>
-                        <p>${summary || 'No summary provided.'}</p>
-                        <hr/>
-                        <h3>Full Chat Transcript</h3>
-                        ${transcriptHtml}
-                    `
+            < h1 > New Lead Captured </h1>
+                < p > <strong>Email: </strong> ${user_email}</p >
+                    <p><strong>Name: </strong> ${user_name || 'N/A'}</p>
+                        < p > <strong>Intent: </strong> ${lead_intent}</p >
+                            <hr/>
+                            < h3 > Summary </h3>
+                            < p > ${ summary || 'No summary provided.' } </p>
+                                < hr />
+                                <h3>Full Chat Transcript </h3>
+                        ${ transcriptHtml }
+        `
                         });
                     } else {
                         console.warn("RESEND_API_KEY missing, skipping actual email send.");

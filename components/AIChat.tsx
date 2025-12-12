@@ -16,7 +16,7 @@ export const AIChat: React.FC = () => {
 
   // Safety Net: Track if user typed an email but didn't convert
   const [capturedEmail, setCapturedEmail] = useState<string | null>(null);
-  const [leadStatus, setLeadStatus] = useState<'tracking' | 'captured'>('tracking');
+  const [hasSentInitialLead, setHasSentInitialLead] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -46,23 +46,24 @@ export const AIChat: React.FC = () => {
     }
   }, [inputValue]);
 
-  // ABANDONMENT: Beacon on Unmount/Visibility Change
+  // ABANDONMENT: Beacon on Unmount/Visibility Change (PULSE 2)
   useEffect(() => {
     const handleAbandonment = () => {
+      // Only send abandonment if we have an email AND we've already sent the initial pulse
+      // (This ensures we don't spam if they just open/close without doing anything meaningful, 
+      // but DOES save the transcript if they engaged).
       if (capturedEmail && messages.length > 2) {
         const payload = JSON.stringify({
           user_email: capturedEmail,
           lead_intent: "ABANDONED_CHAT_DRAFT",
           history: messages,
-          status: "abandoned"
+          status: "ABANDONED" // Pulse 2
         });
 
-        // Use sendBeacon if available for reliability on close
         if (navigator.sendBeacon) {
           const blob = new Blob([payload], { type: 'application/json' });
           navigator.sendBeacon('/api/save-lead', blob);
         } else {
-          // Fallback for older browsers (though minimal support needed for edge AI apps)
           fetch('/api/save-lead', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -73,7 +74,6 @@ export const AIChat: React.FC = () => {
       }
     };
 
-    // Trigger on tab close or hiding (mobile tab switch)
     window.addEventListener('beforeunload', handleAbandonment);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') handleAbandonment();
@@ -83,7 +83,7 @@ export const AIChat: React.FC = () => {
       window.removeEventListener('beforeunload', handleAbandonment);
       document.removeEventListener('visibilitychange', handleAbandonment);
     };
-  }, [capturedEmail, messages]);
+  }, [capturedEmail, messages, hasSentInitialLead]);
 
 
   const handleAutoSend = async (text: string) => {
@@ -115,9 +115,9 @@ export const AIChat: React.FC = () => {
         currentEmail = match[0];
         setCapturedEmail(currentEmail);
 
-        // IMMEDIATE SAVE: Lead Created
-        if (leadStatus === 'tracking') {
-          setLeadStatus('captured');
+        // PULSE 1: IMMEDIATE CAPTURE
+        if (!hasSentInitialLead) {
+          setHasSentInitialLead(true);
           // Fire and forget save
           fetch('/api/save-lead', {
             method: 'POST',
@@ -126,14 +126,14 @@ export const AIChat: React.FC = () => {
               user_email: currentEmail,
               lead_intent: "Conversational Capture",
               history: currentHistory,
-              status: 'new'
+              status: 'INITIAL_CAPTURE'
             })
           });
         }
       }
 
-      // Update Save (If we already have a lead, assume subsequent messages might contain details/company)
-      if (leadStatus === 'captured' && currentEmail && !match) {
+      // Update Log (silent) if user adds more info after initial capture
+      if (hasSentInitialLead && currentEmail && !match) {
         // This message is likely a follow-up answer (Name/Company/Details)
         fetch('/api/save-lead', {
           method: 'POST',
