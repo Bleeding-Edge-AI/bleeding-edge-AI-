@@ -28,34 +28,33 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Email required" }, { status: 400 });
         }
 
-        // --- LOGIC: Handle Different Statuses ---
+        // --- LOGIC: Handle Two-Pulse Strategy ---
 
-        // 1. LEAD CREATED (First Capture)
-        if (status === 'new') {
-            // Only send if we haven't already (simple dedup)
+        // PULSE 1: INITIAL CAPTURE (Immediate)
+        if (status === 'INITIAL_CAPTURE') {
+            const subject = `[NEW LEAD] ${user_email}`;
+            // Simple dedup using cache to avoid spamming if frontend retries
             if (!sentEmailsCache.has(user_email)) {
-                await sendSalesEmail(user_email, user_name, company, lead_intent, history, "NEW LEAD");
+                await sendSalesEmail(user_email, user_name, company, lead_intent, history, subject);
                 sentEmailsCache.add(user_email);
-                console.log(`[SAVE-LEAD] New lead email sent for ${user_email}`);
+                console.log(`[SAVE-LEAD] Initial pulse sent for ${user_email}`);
             } else {
-                console.log(`[SAVE-LEAD] Skipping email for ${user_email}, already sent.`);
+                console.log(`[SAVE-LEAD] Skipping initial email for ${user_email}, already sent.`);
             }
         }
 
-        // 2. LEAD UPDATED (Enriching Data - Company, Details)
-        else if (status === 'updated') {
-            // Do NOT send user email. Just Update Sales (or internal DB).
-            // For this demo, we'll send a "Silent Update" to sales so they see the new info immediately.
-            await sendSalesEmail(user_email, user_name, company, lead_intent, history, "LEAD UPDATE");
-            console.log(`[SAVE-LEAD] Update logged for ${user_email}`);
+        // PULSE 2: ABANDONED (Beacon / Final Transcript)
+        else if (status === 'ABANDONED') {
+            const subject = `[CHAT TRANSCRIPT] ${user_email}`;
+            await sendSalesEmail(user_email, user_name, company, lead_intent, history, subject);
+            console.log(`[SAVE-LEAD] Abandonment transcript sent for ${user_email}`);
         }
 
-        // 3. ABANDONED (User closed tab)
-        else if (status === 'abandoned') {
-            // Only send if we have meaningful data and haven't just sent a "New Lead" email seconds ago? 
-            // Actually, abandonment is valuable. Send it marked as ABANDONED.
-            await sendSalesEmail(user_email, user_name, company, lead_intent, history, "ABANDONED CHAT");
-            console.log(`[SAVE-LEAD] Abandonment captured for ${user_email}`);
+        // Handle generic updates if any (optional, but keeping for safety)
+        else if (status === 'updated') {
+            const subject = `[LEAD UPDATE] ${user_email}`;
+            await sendSalesEmail(user_email, user_name, company, lead_intent, history, subject);
+            console.log(`[SAVE-LEAD] Silent update logged for ${user_email}`);
         }
 
         return NextResponse.json({ status: "success", message: "Lead processed" });
@@ -66,7 +65,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-async function sendSalesEmail(email: string, name: string, company: string, intent: string, history: any[], type: string) {
+async function sendSalesEmail(email: string, name: string, company: string, intent: string, history: any[], subjectLine: string) {
     if (!process.env.RESEND_API_KEY) {
         console.warn("[SAVE-LEAD] No RESEND_API_KEY, skipping email.");
         return;
@@ -79,13 +78,14 @@ async function sendSalesEmail(email: string, name: string, company: string, inte
         ).join('')
         : '<p>No history available.</p>';
 
-    await resend.emails.send({
-        from: 'Bleeding Edge AI <onboarding@resend.dev>',
-        to: ['sales@bleedingedge.group'], // Replace with real sales email
-        subject: `[${type}] ${intent || 'General Inquiry'} - ${email}`,
-        html: `
+    try {
+        await resend.emails.send({
+            from: 'Bleeding Edge AI <onboarding@resend.dev>',
+            to: ['sales@bleedingedge.group'], // Replace with real sales email
+            subject: subjectLine,
+            html: `
             <div style="font-family: sans-serif; padding: 20px;">
-                <h1 style="color: ${type === 'ABANDONED CHAT' ? '#ef4444' : '#10b981'}">${type} CAPTURED</h1>
+                <h1 style="color: #10b981">${subjectLine}</h1>
                 <hr/>
                 <h3>Lead Details</h3>
                 <ul>
@@ -101,5 +101,8 @@ async function sendSalesEmail(email: string, name: string, company: string, inte
                 </div>
             </div>
         `
-    });
+        });
+    } catch (e) {
+        console.error("[SAVE-LEAD] Failed to send email via Resend:", e);
+    }
 }
