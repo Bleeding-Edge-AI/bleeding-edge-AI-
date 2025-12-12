@@ -16,6 +16,7 @@ export const AIChat: React.FC = () => {
 
   // Safety Net: Track if user typed an email but didn't convert
   const [capturedEmail, setCapturedEmail] = useState<string | null>(null);
+  const [leadStatus, setLeadStatus] = useState<'tracking' | 'captured'>('tracking');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -39,32 +40,56 @@ export const AIChat: React.FC = () => {
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
     if (inputValue.match(emailRegex)) {
       const match = inputValue.match(emailRegex);
-      if (match) setCapturedEmail(match[0]);
+      if (match) {
+        setCapturedEmail(match[0]);
+      }
     }
   }, [inputValue]);
 
-  // ABANDONMENT: Beacon on Unmount
+  // ABANDONMENT: Beacon on Unmount/Visibility Change
   useEffect(() => {
-    const handleUnload = () => {
+    const handleAbandonment = () => {
       if (capturedEmail && messages.length > 2) {
-        // Send beacon only if we have an email and some chat history
-        const data = JSON.stringify({
+        const payload = JSON.stringify({
           user_email: capturedEmail,
           lead_intent: "ABANDONED_CHAT_DRAFT",
-          summary: "User typed email but left site."
+          history: messages,
+          status: "abandoned"
         });
-        navigator.sendBeacon('/api/chat/abandon', data);
+
+        // Use sendBeacon if available for reliability on close
+        if (navigator.sendBeacon) {
+          const blob = new Blob([payload], { type: 'application/json' });
+          navigator.sendBeacon('/api/save-lead', blob);
+        } else {
+          // Fallback for older browsers (though minimal support needed for edge AI apps)
+          fetch('/api/save-lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true
+          });
+        }
       }
     };
-    window.addEventListener('beforeunload', handleUnload);
-    return () => window.removeEventListener('beforeunload', handleUnload);
+
+    // Trigger on tab close or hiding (mobile tab switch)
+    window.addEventListener('beforeunload', handleAbandonment);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') handleAbandonment();
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', handleAbandonment);
+      document.removeEventListener('visibilitychange', handleAbandonment);
+    };
   }, [capturedEmail, messages]);
 
 
   const handleAutoSend = async (text: string) => {
     const userMsg: ChatMessage = { role: 'user', text: text, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
-    await processMessage(text, messages);
+    await processMessage(text, messages); // Pass *current* state before update (or use prev ref if critical, but OK for user flow)
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,7 +100,7 @@ export const AIChat: React.FC = () => {
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
 
-    await processMessage(userMsg.text, messages);
+    await processMessage(userMsg.text, [...messages, userMsg]);
   };
 
   const processMessage = async (text: string, currentHistory: ChatMessage[]) => {
@@ -84,7 +109,43 @@ export const AIChat: React.FC = () => {
       // Check for email in message to save locally for abandonment
       const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
       const match = text.match(emailRegex);
-      if (match) setCapturedEmail(match[0]);
+      let currentEmail = capturedEmail;
+
+      if (match) {
+        currentEmail = match[0];
+        setCapturedEmail(currentEmail);
+
+        // IMMEDIATE SAVE: Lead Created
+        if (leadStatus === 'tracking') {
+          setLeadStatus('captured');
+          // Fire and forget save
+          fetch('/api/save-lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_email: currentEmail,
+              lead_intent: "Conversational Capture",
+              history: currentHistory,
+              status: 'new'
+            })
+          });
+        }
+      }
+
+      // Update Save (If we already have a lead, assume subsequent messages might contain details/company)
+      if (leadStatus === 'captured' && currentEmail && !match) {
+        // This message is likely a follow-up answer (Name/Company/Details)
+        fetch('/api/save-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_email: currentEmail,
+            lead_intent: "Follow-up Details",
+            history: currentHistory,
+            status: 'updated'
+          })
+        });
+      }
 
       const response = await fetch('/api/chat', {
         method: 'POST',

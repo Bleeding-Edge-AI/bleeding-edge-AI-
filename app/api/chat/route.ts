@@ -68,14 +68,17 @@ export async function POST(req: NextRequest) {
       
       AFTER calling the tool:
       1. Confirm to the user that the request has been sent.
-      2. IMMEDIATE NEXT STEP (Identity Verification):
-         - If you can infer Name/Company from the email: Ask *only* to confirm this (e.g. "I see you're [Name] from [Company], right?").
-         - If NOT inferred: Ask *only* for their Name.
-      3. CRITICAL: Do NOT ask for project details (qualifying questions) in this same message. Wait for their confirmation first.
+      2. IMMEDIATE NEXT STEP (Identity Verification via Domain Inference):
+         - Check the email domain provided.
+         - IF specific corporate domain (e.g. '@nvidia.com', '@google.com'): Say "I see you are with [Company Name]. Is that correct?"
+         - IF generic domain (e.g. '@gmail.com', '@yahoo.com'): Say "Thanks. What company are you representing?"
+      
+      3. CRITICAL: Do NOT ask for project details (qualifying questions) in this same message. Wait for their confirmation of Company first.
       
       SUBSEQUENT TURNS (Natural Conversation Flow):
-      - If user confirms Name but Company is unknown -> Ask for Company.
-      - If Name and Company are confirmed -> THEN ask the qualification questions (e.g. "Could you tell me a bit more about the scale of deployment you are looking for?").
+      - If user confirms Company -> THEN ask the qualification questions based on their original intent.
+        - If Intent was "Spec Sheet" -> Ask: "Are you looking for high-density racks (50kW+), or standard colocation?"
+        - If Intent was "Build" -> Ask: "Do you have a land site selected, or are you looking for our inventory?"
       
       Keep it one step at a time. Do not overwhelm the user.
     `;
