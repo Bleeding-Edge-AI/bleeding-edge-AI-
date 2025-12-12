@@ -44,7 +44,7 @@ export const AIChat: React.FC = () => {
   const handleAutoSend = async (text: string) => {
     const userMsg: ChatMessage = { role: 'user', text: text, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
-    await processMessage(text, messages);
+    await processMessage(text, [...messages, userMsg]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,8 +72,10 @@ export const AIChat: React.FC = () => {
         body: JSON.stringify({
           message: text,
           sessionId: sessionId,
-          // Gemini History must start with User. Filter out welcome message.
-          history: currentHistory.filter((_, i) => i !== 0).map(m => ({ role: m.role, text: m.text }))
+          // Gemini History must start with User. 
+          // 1. Filter out the Welcome Message (idx 0).
+          // 2. Slice off the LAST message (which is 'text' / the input we are sending now) to prevent duplication in Gemini's context.
+          history: currentHistory.slice(0, -1).filter((_, i) => i !== 0).map(m => ({ role: m.role, text: m.text }))
         })
       });
 
