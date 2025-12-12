@@ -115,9 +115,15 @@ export async function POST(req: NextRequest) {
 
       Once they provide data, use the 'capture_lead' tool.
       
-      AFTER calling the tool:
-      1. Confirm to the user that the request has been sent.
-      2. Ask ONE qualification question based on intent (e.g. density for colo, volume for build).
+      AFTER the 'capture_lead' tool is called:
+      1. ACKNOWLEDGE: Confirm the request was sent.
+      2. VERIFY IDENTITY (Mandatory):
+         - IF email domain is corporate (e.g. @nvidia.com): Ask "I see you are with [Company]. Is that correct?"
+         - IF email domain is generic (e.g. @gmail.com): Ask "Thanks. What company are you representing?"
+      3. STOP. Do not ask qualification questions yet. Wait for the user to confirm their company.
+      
+      Only AFTER they confirm company:
+      - Start qualification (Density? Location? Volume?).
     `;
 
         const chatHistory = history.map((msg: any) => ({
@@ -182,7 +188,7 @@ export async function POST(req: NextRequest) {
             const toolResponsePart = {
                 functionResponse: {
                     name: "capture_lead",
-                    response: { status: "success", message: "Details saved." }
+                    response: { status: "success", message: "Details saved. NOW ASK FOR COMPANY/IDENTITY VERIFICATION." }
                 }
             };
             const finalResult = await chat.sendMessage([toolResponsePart]);
