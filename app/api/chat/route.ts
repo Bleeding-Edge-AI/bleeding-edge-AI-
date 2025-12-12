@@ -192,7 +192,15 @@ export async function POST(req: NextRequest) {
                 }
             };
             const finalResult = await chat.sendMessage([toolResponsePart]);
-            finalResponseText = finalResult.response.text();
+            try {
+                finalResponseText = finalResult.response.text();
+            } catch (e) {
+                console.warn("Gemini produced no text after tool call, using fallback.");
+            }
+
+            if (!finalResponseText) {
+                finalResponseText = "I've saved your details. To ensure I get you the right information, could you please confirm your company name?";
+            }
         }
 
         // ---------------------------------------------------------
