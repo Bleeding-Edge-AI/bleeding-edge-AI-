@@ -48,15 +48,17 @@ export const CapExSimulator: React.FC = () => {
     const palettePos = { x: -420, y: 0 };
 
     useEffect(() => {
-        let timeout: NodeJS.Timeout;
+        let isMounted = true;
 
         const runSequence = async () => {
             // Reset
+            if (!isMounted) return;
             setActiveModules([]);
             setCompletedModules([]);
             await wait(1000);
 
             for (let i = 0; i < 4; i++) {
+                if (!isMounted) return;
                 setTargetSlot(i);
 
                 // 1. Move to Palette
@@ -83,11 +85,11 @@ export const CapExSimulator: React.FC = () => {
 
             // Loop
             await wait(6000);
-            runSequence();
+            if (isMounted) runSequence();
         };
 
         runSequence();
-        return () => clearTimeout(timeout);
+        return () => { isMounted = false; };
     }, []);
 
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
