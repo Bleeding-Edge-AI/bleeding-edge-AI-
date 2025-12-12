@@ -5,17 +5,11 @@ import { Icons } from './Icons';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { useChat } from '@/app/context/ChatContext';
+
 export const AICloudPage: React.FC = () => {
   const router = useRouter();
-
-  const handleContactClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    router.push('/');
-    setTimeout(() => {
-      const element = document.getElementById('contact');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
+  const { openChatWithIntent } = useChat();
 
   const instances = [
     {
@@ -79,13 +73,13 @@ export const AICloudPage: React.FC = () => {
               </p>
               <div className="flex space-x-4">
                 <button
-                  onClick={handleContactClick}
+                  onClick={() => openChatWithIntent("I'd like to start training on H100 clusters.")}
                   className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(158,28,32,0.3)] hover:shadow-[0_0_30px_rgba(158,28,32,0.5)]"
                 >
                   Start Training
                 </button>
                 <button
-                  onClick={handleContactClick}
+                  onClick={() => openChatWithIntent("I'd like to talk to sales about high-volume compute.")}
                   className="px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold rounded-lg transition-all"
                 >
                   Contact Sales
@@ -178,7 +172,7 @@ export const AICloudPage: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={handleContactClick}
+                  onClick={() => openChatWithIntent(`I want to deploy a node: ${instance.name}`)}
                   className={`w-full py-3 rounded-lg font-bold transition-all ${instance.reserved ? 'bg-brand-600 hover:bg-brand-500 text-white' : 'bg-white/5 hover:bg-white/10 text-white'}`}
                 >
                   Deploy Node
@@ -196,13 +190,12 @@ export const AICloudPage: React.FC = () => {
           <p className="text-lg text-slate-300 mb-8">
             Our Applied AI team can help you build custom Slurm clusters, set up Kubernetes (EKS/GKE hybrid), and optimize your training checkpoints.
           </p>
-          <a
-            href="#contact"
-            onClick={handleContactClick}
+          <button
+            onClick={() => openChatWithIntent("I'd like to talk to an engineer about custom orchestration.")}
             className="inline-block px-8 py-4 bg-white text-slate-950 font-bold rounded-lg hover:bg-slate-200 transition-all cursor-pointer"
           >
             Talk to an Engineer
-          </a>
+          </button>
         </div>
       </section>
     </div>

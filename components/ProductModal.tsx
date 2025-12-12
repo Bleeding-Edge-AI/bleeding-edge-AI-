@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check } from 'lucide-react';
+import { useChat } from '@/app/context/ChatContext';
 
 interface ProductSpec {
     label: string;
@@ -25,6 +26,8 @@ interface ProductModalProps {
 }
 
 export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
+    const { openChatWithIntent } = useChat();
+
     if (!product) return null;
 
     return (
@@ -81,7 +84,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                             </div>
 
                             <div className="mt-8">
-                                <button className="w-full py-4 bg-white text-neutral-950 font-bold rounded hover:bg-neutral-200 transition-colors">
+                                <button
+                                    onClick={() => openChatWithIntent(`I'd like to download the technical datasheet for ${product.name}.`)}
+                                    className="w-full py-4 bg-white text-neutral-950 font-bold rounded hover:bg-neutral-200 transition-colors"
+                                >
                                     Download Technical Datasheet
                                 </button>
                             </div>

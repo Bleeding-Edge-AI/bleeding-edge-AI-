@@ -3,15 +3,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Icons } from './Icons';
 import { ChatMessage } from '../types';
-import { submitUserMessage } from '../app/actions';
+import { useChat } from '@/app/context/ChatContext';
 
 export const AIChat: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, openChat, closeChat, activeIntent, clearIntent } = useChat();
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'model', text: "Hello! I'm Edge, your AI infrastructure specialist. Ask me about our GPU availability, build specs, or colocation tiers.", timestamp: new Date() }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Safety Net: Track if user typed an email but didn't convert
+  const [capturedEmail, setCapturedEmail] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -22,6 +26,47 @@ export const AIChat: React.FC = () => {
     scrollToBottom();
   }, [messages, isOpen]);
 
+  // LISTEN FOR EXTERNAL INTENTS (e.g. from Buttons)
+  useEffect(() => {
+    if (activeIntent && !isLoading) {
+      handleAutoSend(activeIntent);
+      clearIntent(); // Clear immediately so it doesn't loop
+    }
+  }, [activeIntent]);
+
+  // ABANDONMENT: Listener for emails in input
+  useEffect(() => {
+    const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
+    if (inputValue.match(emailRegex)) {
+      const match = inputValue.match(emailRegex);
+      if (match) setCapturedEmail(match[0]);
+    }
+  }, [inputValue]);
+
+  // ABANDONMENT: Beacon on Unmount
+  useEffect(() => {
+    const handleUnload = () => {
+      if (capturedEmail && messages.length > 2) {
+        // Send beacon only if we have an email and some chat history
+        const data = JSON.stringify({
+          user_email: capturedEmail,
+          lead_intent: "ABANDONED_CHAT_DRAFT",
+          summary: "User typed email but left site."
+        });
+        navigator.sendBeacon('/api/chat/abandon', data);
+      }
+    };
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [capturedEmail, messages]);
+
+
+  const handleAutoSend = async (text: string) => {
+    const userMsg: ChatMessage = { role: 'user', text: text, timestamp: new Date() };
+    setMessages(prev => [...prev, userMsg]);
+    await processMessage(text, [...messages, userMsg]);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
@@ -29,24 +74,46 @@ export const AIChat: React.FC = () => {
     const userMsg: ChatMessage = { role: 'user', text: inputValue, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
-    setIsLoading(true);
 
+    await processMessage(userMsg.text, [...messages, userMsg]);
+  };
+
+  const processMessage = async (text: string, currentHistory: ChatMessage[]) => {
+    setIsLoading(true);
     try {
-      const response = await submitUserMessage(userMsg.text);
-      const modelMsg: ChatMessage = { role: 'model', text: response.text, timestamp: new Date() };
+      // Check for email in message to save locally for abandonment
+      const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
+      const match = text.match(emailRegex);
+      if (match) setCapturedEmail(match[0]);
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: currentHistory.map(m => ({ role: m.role, text: m.text }))
+        })
+      });
+
+      if (!response.ok) throw new Error('API Failed');
+
+      const data = await response.json();
+      const modelMsg: ChatMessage = { role: 'model', text: data.text, timestamp: new Date() };
       setMessages(prev => [...prev, modelMsg]);
+
     } catch (err) {
       console.error(err);
+      setMessages(prev => [...prev, { role: 'model', text: "I'm having trouble connecting to HQ. Please try again or email sales@bleedingedge.group directly.", timestamp: new Date() }]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <>
       {/* Trigger Button */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={openChat}
         className={`fixed bottom-8 right-8 z-40 bg-brand-600 hover:bg-brand-500 text-white p-4 rounded-full shadow-[0_0_30px_rgba(158,28,32,0.3)] transition-all hover:scale-110 ${isOpen ? 'hidden' : 'flex'}`}
         aria-label="Open AI Chat"
       >
@@ -71,7 +138,7 @@ export const AIChat: React.FC = () => {
               </div>
             </div>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={closeChat}
               className="text-slate-400 hover:text-white transition-colors"
             >
               <Icons.X className="w-5 h-5" />

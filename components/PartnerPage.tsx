@@ -4,16 +4,15 @@ import React from 'react';
 import { Icons } from './Icons';
 import { useRouter } from 'next/navigation';
 
+import { useChat } from '@/app/context/ChatContext';
+
 export const PartnerPage: React.FC = () => {
   const router = useRouter();
+  const { openChatWithIntent } = useChat();
 
   const handleContactClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push('/');
-    setTimeout(() => {
-      const element = document.getElementById('contact');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    openChatWithIntent("I'm interested in applying for the Bleeding Edge Partner Program.");
   };
 
   const benefits = [

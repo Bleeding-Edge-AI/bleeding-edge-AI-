@@ -10,16 +10,15 @@ import { ProprietaryArsenal } from './ProprietaryArsenal';
 import { AiInfiniteMatrix } from './AiInfiniteMatrix';
 import { AiTransformationHero } from './AiTransformationHero';
 
+import { useChat } from '@/app/context/ChatContext';
+
 export const AppliedAIPage: React.FC = () => {
   const router = useRouter();
+  const { openChatWithIntent } = useChat();
 
   const handleContactClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push('/');
-    setTimeout(() => {
-      const element = document.getElementById('contact');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    openChatWithIntent("I'd like to schedule a consultation for Applied AI Services.");
   };
 
   const solutions = [

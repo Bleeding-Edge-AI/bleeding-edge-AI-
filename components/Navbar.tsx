@@ -6,11 +6,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Icons } from './Icons';
 import { Logo } from './Logo';
 
+import { useChat } from '@/app/context/ChatContext';
+
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { openChatWithIntent } = useChat();
   const isHome = pathname === '/';
 
   useEffect(() => {
@@ -25,6 +28,11 @@ export const Navbar: React.FC = () => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
 
+    if (targetId === 'contact') {
+      openChatWithIntent("I'd like to get in touch with sales.");
+      return;
+    }
+
     if (isHome) {
       const element = document.getElementById(targetId);
       if (element) {
@@ -37,6 +45,11 @@ export const Navbar: React.FC = () => {
         if (element) element.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
+  };
+
+  const handleGetStarted = () => {
+    setIsMobileMenuOpen(false);
+    openChatWithIntent("I'm interested in getting started with Bleeding Edge.");
   };
 
   interface NavLink {
@@ -148,13 +161,12 @@ export const Navbar: React.FC = () => {
               </a>
             );
           })}
-          <a
-            href="#contact"
-            onClick={(e) => handleNavClick(e, 'contact')}
+          <button
+            onClick={handleGetStarted}
             className="px-6 py-2 bg-white text-brand-950 font-bold rounded-full transition-all hover:bg-slate-200 cursor-pointer"
           >
             Get Started
-          </a>
+          </button>
         </div>
 
         {/* Mobile Toggle */}

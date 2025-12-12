@@ -11,7 +11,10 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 
+import { useChat } from '@/app/context/ChatContext';
+
 export default function QRO1SpecsPage() {
+    const { openChatWithIntent } = useChat();
     return (
         <div className="bg-neutral-950 min-h-screen text-white selection:bg-red-500 selection:text-white font-sans">
 
@@ -279,12 +282,18 @@ export default function QRO1SpecsPage() {
                     <div className="max-w-4xl mx-auto text-center">
                         <h2 className="text-4xl font-bold mb-8">Ready to Deploy?</h2>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link href="/contact" className="px-8 py-4 bg-red-600 text-white font-bold rounded-lg hover:bg-red-500 transition-colors flex items-center gap-2 group">
+                            <button
+                                onClick={() => openChatWithIntent("I'd like to schedule a technical walkthrough for QRO1.")}
+                                className="px-8 py-4 bg-red-600 text-white font-bold rounded-lg hover:bg-red-500 transition-colors flex items-center gap-2 group"
+                            >
                                 Schedule Technical Walkthrough
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </Link>
+                            </button>
 
-                            <button className="px-8 py-4 border border-white/10 text-white font-medium rounded-lg hover:bg-white/5 transition-colors flex items-center gap-2">
+                            <button
+                                onClick={() => openChatWithIntent("I'd like to download a PDF copy of the QRO1 specs.")}
+                                className="px-8 py-4 border border-white/10 text-white font-medium rounded-lg hover:bg-white/5 transition-colors flex items-center gap-2"
+                            >
                                 <Download className="w-5 h-5" />
                                 Download PDF Copy
                             </button>

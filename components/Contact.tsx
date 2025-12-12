@@ -1,7 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Icons } from './Icons';
+import { useChat } from '@/app/context/ChatContext';
 
 export const Contact: React.FC = () => {
+  const { openChatWithIntent } = useChat();
+  const [formData, setFormData] = useState({
+    name: '',
+    company: '',
+    email: '',
+    interest: 'Hyperscale Build',
+    message: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const intent = `Hi, I'm ${formData.name || 'a user'} from ${formData.company || 'my company'}. 
+        Email: ${formData.email}
+        I'm interested in ${formData.interest}. 
+        Message: ${formData.message}`;
+
+    openChatWithIntent(intent);
+  };
+
   return (
     <section id="contact" className="py-24 relative overflow-hidden">
       {/* Background Gradients */}
@@ -41,26 +65,26 @@ export const Contact: React.FC = () => {
             </div>
           </div>
 
-          <form className="glass-panel p-8 rounded-2xl space-y-6">
+          <form className="glass-panel p-8 rounded-2xl space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-slate-500 mb-2">Name</label>
-                <input type="text" className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="John Doe" />
+                <input name="name" onChange={handleChange} type="text" className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="John Doe" />
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-wider text-slate-500 mb-2">Company</label>
-                <input type="text" className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="Acme AI Inc." />
+                <input name="company" onChange={handleChange} type="text" className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="Acme AI Inc." />
               </div>
             </div>
 
             <div>
               <label className="block text-xs uppercase tracking-wider text-slate-500 mb-2">Email</label>
-              <input type="email" className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="john@acme.ai" />
+              <input name="email" onChange={handleChange} type="email" className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="john@acme.ai" />
             </div>
 
             <div>
               <label className="block text-xs uppercase tracking-wider text-slate-500 mb-2">Interest</label>
-              <select className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors">
+              <select name="interest" onChange={handleChange} className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors">
                 <option>Hyperscale Build</option>
                 <option>Colocation</option>
                 <option>AI Cloud (GPU)</option>
@@ -70,10 +94,10 @@ export const Contact: React.FC = () => {
 
             <div>
               <label className="block text-xs uppercase tracking-wider text-slate-500 mb-2">Message</label>
-              <textarea rows={4} className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="Tell us about your compute requirements..."></textarea>
+              <textarea name="message" onChange={handleChange} rows={4} className="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-500 focus:outline-none transition-colors" placeholder="Tell us about your compute requirements..."></textarea>
             </div>
 
-            <button type="button" className="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-4 rounded-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg">
+            <button type="submit" className="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-4 rounded-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg">
               Request Consultation
             </button>
           </form>

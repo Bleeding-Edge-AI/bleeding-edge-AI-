@@ -5,7 +5,10 @@ import { BadgeCheck, Zap, Shield, Server, Globe, ArrowRight, Lock, Network } fro
 import Link from 'next/link';
 import { FiberOpticBackground } from '@/components/FiberOpticBackground';
 
+import { useChat } from '@/app/context/ChatContext';
+
 export default function ColocationAltPage() {
+    const { openChatWithIntent } = useChat();
     const features = [
         {
             title: 'Tier IV Reliability',
@@ -66,12 +69,18 @@ export default function ColocationAltPage() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/contact" className="px-8 py-4 bg-cyan-500 text-black font-bold hover:bg-cyan-400 transition-all flex items-center justify-center gap-2 rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+                        <button
+                            onClick={() => openChatWithIntent("I'd like to configure colocation space.")}
+                            className="px-8 py-4 bg-cyan-500 text-black font-bold hover:bg-cyan-400 transition-all flex items-center justify-center gap-2 rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.4)]"
+                        >
                             CONFIGURE SPACE <ArrowRight className="w-4 h-4" />
-                        </Link>
-                        <Link href="/contact" className="px-8 py-4 border border-cyan-500/30 text-cyan-400 font-medium hover:bg-cyan-950/30 transition-all text-center rounded-lg backdrop-blur-sm">
+                        </button>
+                        <button
+                            onClick={() => openChatWithIntent("I'd like to book a tour.")}
+                            className="px-8 py-4 border border-cyan-500/30 text-cyan-400 font-medium hover:bg-cyan-950/30 transition-all text-center rounded-lg backdrop-blur-sm"
+                        >
                             BOOK A TOUR
-                        </Link>
+                        </button>
                     </div>
 
                     {/* Trust Badges */}
@@ -171,8 +180,8 @@ export default function ColocationAltPage() {
                             <div className="flex justify-between items-start mb-4">
                                 <Globe className="w-6 h-6 text-gray-600 group-hover:text-cyan-500 transition-colors" />
                                 <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${loc.status === 'Available' ? 'bg-cyan-500/10 text-cyan-500' :
-                                        loc.status === 'Limited' ? 'bg-violet-500/10 text-violet-500' :
-                                            'bg-red-500/10 text-red-500'
+                                    loc.status === 'Limited' ? 'bg-violet-500/10 text-violet-500' :
+                                        'bg-red-500/10 text-red-500'
                                     }`}>
                                     {loc.status}
                                 </span>

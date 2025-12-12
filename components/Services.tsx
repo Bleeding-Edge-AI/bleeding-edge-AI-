@@ -45,15 +45,15 @@ const services: (Service & { link?: string })[] = [
   }
 ];
 
+import { useChat } from '@/app/context/ChatContext';
+
 export const Services: React.FC = () => {
   const router = useRouter();
+  const { openChatWithIntent } = useChat();
 
-  const handleScroll = (e: React.MouseEvent, id: string) => {
+  const handleLearnMore = (e: React.MouseEvent, title: string) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    openChatWithIntent(`I'd like to learn more about ${title}.`);
   };
 
   return (
@@ -124,13 +124,12 @@ export const Services: React.FC = () => {
                       Learn more <Icons.ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                   ) : (
-                    <a
-                      href="#contact"
-                      onClick={(e) => handleScroll(e, 'contact')}
+                    <button
+                      onClick={(e) => handleLearnMore(e, service.title)}
                       className="text-brand-500 font-semibold hover:text-brand-400 inline-flex items-center transition-colors cursor-pointer"
                     >
                       Learn more <Icons.ArrowRight className="ml-2 w-4 h-4" />
-                    </a>
+                    </button>
                   )}
                 </div>
               </div>

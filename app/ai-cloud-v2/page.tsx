@@ -8,7 +8,10 @@ import { StickyScrollSection } from '@/components/StickyScrollSection';
 import { InfrastructureBlueprint } from '@/components/InfrastructureBlueprint';
 import { SovereignCloudSection } from '@/components/SovereignCloudSection';
 
+import { useChat } from '@/app/context/ChatContext';
+
 export default function AICloudV2Page() {
+    const { openChatWithIntent } = useChat();
     return (
         <div className="bg-black min-h-screen text-white">
 
@@ -55,9 +58,12 @@ export default function AICloudV2Page() {
                         transition={{ delay: 0.2, duration: 0.8 }}
                         className="flex flex-col sm:flex-row gap-4 justify-center"
                     >
-                        <Link href="/contact" className="px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] flex items-center justify-center gap-2">
+                        <button
+                            onClick={() => openChatWithIntent("I'd like to talk to an architect about private AI factory.")}
+                            className="px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] flex items-center justify-center gap-2"
+                        >
                             Talk to an Architect <ArrowRight className="w-5 h-5" />
-                        </Link>
+                        </button>
                         <button className="px-8 py-4 border border-white/20 hover:bg-white/5 text-white font-bold rounded-lg transition-all">
                             View Hardware Specs
                         </button>
@@ -84,9 +90,12 @@ export default function AICloudV2Page() {
                     <p className="text-gray-400 text-lg mb-8">
                         Talk to our infrastructure architects. We'll help you size and deploy your private cluster.
                     </p>
-                    <Link href="/contact" className="inline-flex px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                    <button
+                        onClick={() => openChatWithIntent("I'd like to schedule an architecture call.")}
+                        className="inline-flex px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+                    >
                         Schedule Architecture Call
-                    </Link>
+                    </button>
                 </div>
             </section>
 
