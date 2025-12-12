@@ -91,7 +91,9 @@ export const AIChat: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          history: currentHistory.map(m => ({ role: m.role, text: m.text }))
+          // Gemini History must start with User. The first message in local state is the Model Welcome.
+          // We filter it out to ensure valid history.
+          history: currentHistory.filter((_, i) => i !== 0).map(m => ({ role: m.role, text: m.text }))
         })
       });
 
