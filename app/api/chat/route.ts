@@ -67,22 +67,22 @@ export async function POST(req: NextRequest) {
       You: "I can help with H100 availability. What is your business email address?"
 
       Once they provide it, you MUST IMMEDIATELY call the 'send_lead_to_sales' tool.
-    `;  
+      
       AFTER calling the tool:
-        1. Confirm to the user that the request has been sent.
-      2. IMMEDIATE NEXT STEP(Identity Verification via Domain Inference):
-        - Check the email domain provided.
-         - IF specific corporate domain(e.g. '@nvidia.com', '@google.com'): Say "I see you are with [Company Name]. Is that correct?"
-            - IF generic domain(e.g. '@gmail.com', '@yahoo.com'): Say "Thanks. What company are you representing?"
-
-        3. CRITICAL: Do NOT ask for project details(qualifying questions) in this same message.Wait for their confirmation of Company first.
+      1. Confirm to the user that the request has been sent.
+      2. IMMEDIATE NEXT STEP (Identity Verification via Domain Inference):
+         - Check the email domain provided.
+         - IF specific corporate domain (e.g. '@nvidia.com', '@google.com'): Say "I see you are with [Company Name]. Is that correct?"
+         - IF generic domain (e.g. '@gmail.com', '@yahoo.com'): Say "Thanks. What company are you representing?"
       
-      SUBSEQUENT TURNS(Natural Conversation Flow):
-        - If user confirms Company -> THEN ask the qualification questions based on their original intent.
+      3. CRITICAL: Do NOT ask for project details (qualifying questions) in this same message. Wait for their confirmation of Company first.
+      
+      SUBSEQUENT TURNS (Natural Conversation Flow):
+      - If user confirms Company -> THEN ask the qualification questions based on their original intent.
         - If Intent was "Spec Sheet" -> Ask: "Are you looking for high-density racks (50kW+), or standard colocation?"
-            - If Intent was "Build" -> Ask: "Do you have a land site selected, or are you looking for our inventory?"
+        - If Intent was "Build" -> Ask: "Do you have a land site selected, or are you looking for our inventory?"
       
-      Keep it one step at a time.Do not overwhelm the user.
+      Keep it one step at a time. Do not overwhelm the user.
     `;
 
         // Construct history for Gemini
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
 
                 // Construct Chat Transcript for Email
                 const transcriptHtml = history.map((msg: any) =>
-                    `< p > <strong>${ msg.role === 'user' ? 'User' : 'Edge' }: </strong> ${msg.text}</p > `
+                    `< p > <strong>${msg.role === 'user' ? 'User' : 'Edge'}: </strong> ${msg.text}</p > `
                 ).join('') + `< p > <strong>User: </strong> ${message}</p > `;
 
                 try {
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
                         await resend.emails.send({
                             from: 'Bleeding Edge AI <onboarding@resend.dev>', // Verify domain in prod
                             to: ['sales@bleedingedge.group'],
-                            subject: `[LEAD] ${ lead_intent } `,
+                            subject: `[LEAD] ${lead_intent} `,
                             html: `
             < h1 > New Lead Captured </h1>
                 < p > <strong>Email: </strong> ${user_email}</p >
@@ -131,10 +131,10 @@ export async function POST(req: NextRequest) {
                         < p > <strong>Intent: </strong> ${lead_intent}</p >
                             <hr/>
                             < h3 > Summary </h3>
-                            < p > ${ summary || 'No summary provided.' } </p>
+                            < p > ${summary || 'No summary provided.'} </p>
                                 < hr />
                                 <h3>Full Chat Transcript </h3>
-                        ${ transcriptHtml }
+                        ${transcriptHtml}
         `
                         });
                     } else {
