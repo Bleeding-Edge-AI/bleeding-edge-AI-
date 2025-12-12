@@ -1,75 +1,176 @@
 'use client';
 
-import React from 'react';
-import { Shield, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, Zap, Eye, Wind, Plus, Circle } from 'lucide-react';
+
+interface FeaturePoint {
+    id: string;
+    number: string;
+    label: string;
+    description: string;
+    icon: React.ElementType;
+    position: { top: string; left: string };
+}
+
+const features: FeaturePoint[] = [
+    {
+        id: 'shell',
+        number: '01',
+        label: 'Prefab Concrete',
+        description: 'Far more robust than containers. Fire-resistant, ballistic-rated, and built for 50-year longevity.',
+        icon: Shield,
+        position: { top: '30%', left: '20%' }, // Top-left corner area
+    },
+    {
+        id: 'env',
+        number: '02',
+        label: 'Outdoor Ready',
+        description: 'Weatherproof and secure by default. Deploy on a slab outdoors or inside a warehouse.',
+        icon: Wind,
+        position: { top: '15%', left: '60%' }, // Roof area
+    },
+    {
+        id: 'backbone',
+        number: '03',
+        label: 'Tier III+ Resiliency',
+        description: 'Resilient backbone ready for mission-critical workloads. N+1 Cooling and 2N Power.',
+        icon: Zap,
+        position: { top: '55%', left: '80%' }, // Side wall
+    },
+    {
+        id: 'security',
+        number: '04',
+        label: 'Integrated Security',
+        description: 'CCTV, access control, and monitoring are built-in, not bolted on.',
+        icon: Eye,
+        position: { top: '70%', left: '35%' }, // Front/Corner
+    }
+];
 
 export const TechnicalDeepDive: React.FC = () => {
+    const [activeFeature, setActiveFeature] = useState<string | null>(null);
+
+    const activeData = features.find(f => f.id === activeFeature);
+
     return (
-        <section className="py-24 px-6 bg-neutral-950 border-t border-white/5">
-            <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                    {/* Left Col: Fortress Grade */}
-                    <div>
-                        <div className="flex items-center space-x-4 mb-6">
-                            <div className="p-3 bg-neutral-900 rounded-lg text-white">
-                                <Shield className="w-6 h-6" />
-                            </div>
-                            <h2 className="text-3xl font-display font-bold text-white">Fortress Grade</h2>
-                        </div>
+        <section className="py-24 px-6 bg-neutral-950 relative overflow-hidden">
+            {/* Background Texture */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/concrete-wall.png')]" />
 
-                        <p className="text-neutral-400 mb-8 leading-relaxed">
-                            Prefab Reinforced Concrete. Ballistic rated. Fire resistant. This is not a shipping container.
-                            It is a permanent asset built to withstand extreme environments.
-                        </p>
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-                        <div className="relative h-64 bg-neutral-900 rounded-xl overflow-hidden border border-white/10 group">
-                            <img
-                                src="https://images.unsplash.com/photo-1485083269755-a7b559a4fe5e?q=80&w=2069&auto=format&fit=crop"
-                                alt="Concrete Texture"
-                                className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="bg-black/50 backdrop-blur-sm px-6 py-3 rounded border border-white/20">
-                                    <div className="text-2xl font-bold text-white">UL 752 Level 4</div>
-                                    <div className="text-xs text-neutral-400 uppercase tracking-widest text-center">Ballistic Rated</div>
+                {/* 1. Content / Text */}
+                <div className="relative z-10 order-2 lg:order-1">
+                    <div className="inline-block px-3 py-1 bg-red-900/30 border border-red-900/50 rounded-full text-red-500 font-mono text-xs mb-6 tracking-widest uppercase">
+                        Fortress Grade Infrastructure
+                    </div>
+                    <h2 className="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase leading-[0.9]">
+                        Not a Container. <br />
+                        <span className="text-neutral-500">A Bunker.</span>
+                    </h2>
+                    <p className="text-xl text-neutral-400 font-light mb-12 max-w-lg">
+                        Prefabricated reinforced concrete. Ballistic rated. Weatherproof.
+                        The speed of modular, with the permanence of a fortress.
+                    </p>
+
+                    {/* Feature Details Panel */}
+                    <AnimatePresence mode="wait">
+                        {activeData ? (
+                            <motion.div
+                                key={activeData.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                className="bg-neutral-900 border border-white/10 p-8 rounded-2xl relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 p-4 opacity-10 font-black text-8xl text-white select-none">
+                                    {activeData.number}
                                 </div>
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-4 mb-4 text-red-500">
+                                        <activeData.icon className="w-6 h-6" />
+                                        <span className="font-mono font-bold uppercase tracking-widest">{activeData.label}</span>
+                                    </div>
+                                    <p className="text-neutral-300 text-lg leading-relaxed">
+                                        {activeData.description}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <div className="h-[180px] flex items-center text-neutral-600 font-mono text-sm uppercase tracking-widest border-l-2 border-dashed border-neutral-800 pl-8">
+                                // HOVER OVER THE IMAGE POINTS TO ANALYZE SPECS
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Right Col: Future Proof */}
-                    <div>
-                        <div className="flex items-center space-x-4 mb-6">
-                            <div className="p-3 bg-neutral-900 rounded-lg text-white">
-                                <RefreshCw className="w-6 h-6" />
-                            </div>
-                            <h2 className="text-3xl font-display font-bold text-white">Future Proof Chassis</h2>
-                        </div>
-
-                        <p className="text-neutral-400 mb-8 leading-relaxed">
-                            The Chassis that evolves. Switch cooling technologies without rebuilding the shell.
-                            From Air Cooling to Rear-Door Heat Exchangers to Direct-to-Chip.
-                        </p>
-
-                        <div className="relative h-64 bg-neutral-900 rounded-xl overflow-hidden border border-white/10 p-8 flex items-center justify-between">
-                            {/* Simple Evolution Viz */}
-                            <div className="text-center opacity-40">
-                                <div className="w-16 h-16 bg-neutral-800 rounded-full mx-auto mb-2 flex items-center justify-center border border-white/10">Air</div>
-                                <div className="text-xs">2023</div>
-                            </div>
-                            <div className="h-px bg-white/20 flex-1 mx-4"></div>
-                            <div className="text-center opacity-70">
-                                <div className="w-16 h-16 bg-neutral-800 rounded-full mx-auto mb-2 flex items-center justify-center border border-white/10">RDHx</div>
-                                <div className="text-xs">2024</div>
-                            </div>
-                            <div className="h-px bg-white/20 flex-1 mx-4"></div>
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-red-900/20 rounded-full mx-auto mb-2 flex items-center justify-center border border-red-500 text-red-500">DLC</div>
-                                <div className="text-xs text-red-500 font-bold">NOW</div>
-                            </div>
-                        </div>
-                    </div>
+                        )}
+                    </AnimatePresence>
                 </div>
+
+                {/* 2. Visual / The Image with Hotspots */}
+                <div className="relative h-[500px] lg:h-[600px] flex items-center justify-center order-1 lg:order-2">
+
+                    <div className="relative w-full max-w-xl aspect-square md:aspect-[4/3] rounded-3xl border border-white/10 overflow-hidden shadow-2xl bg-black">
+                        {/* The Image */}
+                        <img
+                            src="/images/standard-compute-1.jpg"
+                            alt="Concrete Data Center Module"
+                            className="w-full h-full object-cover opacity-80 transition-transform duration-700 hover:scale-105"
+                        />
+
+                        {/* Vignette Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent opacity-80" />
+
+
+                        {/* Hotspots */}
+                        {features.map((feature) => {
+                            const isActive = activeFeature === feature.id;
+
+                            return (
+                                <div
+                                    key={feature.id}
+                                    className="absolute z-30"
+                                    style={{ top: feature.position.top, left: feature.position.left }}
+                                    onMouseEnter={() => setActiveFeature(feature.id)}
+                                // onMouseLeave={() => setActiveFeature(null)} // Optional: keep active until next hover for easier reading
+                                >
+                                    {/* The Marker */}
+                                    <div className="relative flex items-center justify-center w-12 h-12 -translate-x-1/2 -translate-y-1/2 cursor-pointer group">
+                                        {/* Pulse Ring */}
+                                        <div className={`absolute inset-0 rounded-full bg-red-500/30 ${isActive ? 'animate-ping' : ''}`} />
+
+                                        {/* Core Dot */}
+                                        <div className={`
+                                            relative w-4 h-4 rounded-full border-2 transition-all duration-300
+                                            ${isActive ? 'bg-red-600 border-white scale-125' : 'bg-neutral-900 border-red-500 group-hover:bg-red-500'}
+                                        `} />
+
+                                        {/* Line & Label (Visible on Hover/Active) */}
+                                        <AnimatePresence>
+                                            {isActive && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, width: 0 }}
+                                                    animate={{ opacity: 1, width: 'auto' }}
+                                                    exit={{ opacity: 0, width: 0 }}
+                                                    className="absolute left-full ml-4 hidden md:flex items-center whitespace-nowrap"
+                                                >
+                                                    {/* Connecting Line */}
+                                                    <div className="w-8 h-px bg-red-500 mr-2 origin-left" />
+
+                                                    {/* Label Tag */}
+                                                    <div className="px-3 py-1 bg-black/80 backdrop-blur border border-red-500/50 rounded text-red-500 font-mono text-xs uppercase tracking-wider">
+                                                        {feature.label}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                    </div>
+
+                </div>
+
             </div>
         </section>
     );

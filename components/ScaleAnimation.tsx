@@ -26,32 +26,29 @@ export const ScaleAnimation: React.FC = () => {
 
     return (
         <div ref={containerRef} className="relative h-[400vh] bg-neutral-950">
-            <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
+            <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden gap-8 py-12">
 
                 {/* Title Container */}
-                <div className="absolute top-24 z-20 text-center px-6">
+                <div className="relative z-20 text-center px-6 w-full h-24 shrink-0">
                     <motion.div style={{ opacity: nodeOpacity }} className="absolute inset-0 flex items-center justify-center">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-bold font-display text-white mb-2">From Node...</h2>
-                            <div className="text-red-500 font-mono text-sm tracking-widest uppercase">Edge Deployment (Month 1)</div>
                         </div>
                     </motion.div>
                     <motion.div style={{ opacity: clusterOpacity }} className="absolute inset-0 flex items-center justify-center">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-bold font-display text-white mb-2">...To Campus...</h2>
-                            <div className="text-red-500 font-mono text-sm tracking-widest uppercase">Campus Cluster (Month 8)</div>
                         </div>
                     </motion.div>
                     <motion.div style={{ opacity: networkOpacity }} className="absolute inset-0 flex items-center justify-center">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-bold font-display text-white mb-2">...To Constellation.</h2>
-                            <div className="text-red-500 font-mono text-sm tracking-widest uppercase">Distributed Network (Year 2)</div>
                         </div>
                     </motion.div>
                 </div>
 
                 {/* Visuals Container */}
-                <div className="relative w-full max-w-5xl aspect-video bg-neutral-900/50 rounded-2xl border border-white/5 overflow-hidden shadow-2xl">
+                <div className="relative w-full max-w-5xl h-[55vh] min-h-[400px] max-h-[600px] bg-neutral-900/50 rounded-2xl border border-white/5 overflow-hidden shadow-2xl shrink-0">
                     {/* Background Grid */}
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
 
@@ -65,7 +62,7 @@ export const ScaleAnimation: React.FC = () => {
 
                     {/* Phase 2: Cluster */}
                     <motion.div style={{ opacity: clusterOpacity, scale: clusterScale }} className="absolute inset-0 flex items-center justify-center">
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-4 scale-75 md:scale-100 transition-transform">
                             {[1, 2, 3, 4, 5, 6].map(i => (
                                 <div key={i} className="w-24 h-36 bg-neutral-800 border border-neutral-600 rounded-lg flex items-center justify-center relative group">
                                     <div className="absolute inset-0 bg-red-500/5"></div>
@@ -82,36 +79,21 @@ export const ScaleAnimation: React.FC = () => {
 
                     {/* Phase 3: Map / Network */}
                     <motion.div style={{ opacity: networkOpacity, scale: networkScale }} className="absolute inset-0 flex items-center justify-center">
-                        {/* Simplified Map Visualization */}
-                        <div className="relative w-full h-full opacity-50">
-                            <svg className="w-full h-full" viewBox="0 0 800 450">
-                                {/* Map Points */}
-                                <circle cx="200" cy="150" r="4" fill="#666" />
-                                <circle cx="210" cy="280" r="4" fill="#666" />
-
-                                {/* Active Clusters */}
-                                <circle cx="400" cy="225" r="8" fill="#DC2626" className="animate-pulse" />
-                                <circle cx="400" cy="225" r="30" fill="none" stroke="#DC2626" strokeWidth="1" opacity="0.5" />
-
-                                <circle cx="600" cy="100" r="6" fill="#DC2626" />
-                                <circle cx="550" cy="350" r="6" fill="#DC2626" />
-
-                                {/* Connection Lines */}
-                                <path d="M400,225 L600,100" stroke="#DC2626" strokeWidth="1" strokeDasharray="5,5" opacity="0.5" />
-                                <path d="M400,225 L550,350" stroke="#DC2626" strokeWidth="1" strokeDasharray="5,5" opacity="0.5" />
-                            </svg>
+                        {/* Map Background - User Provided */}
+                        <div className="absolute inset-0">
+                            <img
+                                src="/constellation_map.jpg"
+                                alt="Global Network Constellation"
+                                className="w-full h-full object-cover opacity-80"
+                            />
                         </div>
-                        <div className="absolute bottom-8 right-8 text-right">
-                            <div className="text-4xl font-bold text-white">450 MW</div>
-                            <div className="text-sm font-mono text-neutral-500">TOTAL CAPACITY</div>
-                        </div>
+
+
                     </motion.div>
 
                 </div>
 
-                <div className="absolute bottom-12 text-center max-w-xl px-6">
-                    <h3 className="text-xl text-neutral-400">Deploy CapEx in increments. <span className="text-white">Never overbuild.</span></h3>
-                </div>
+
             </div>
         </div>
     );
