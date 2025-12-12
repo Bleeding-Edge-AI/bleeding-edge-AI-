@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType, Tool } from '@google/generative-ai';
 import { Resend } from 'resend';
 
 // Initialize Gemini Client
@@ -13,7 +13,7 @@ const genAI = new GoogleGenerativeAI(apiKey);
 const resend = new Resend(process.env.RESEND_API_KEY || 're_123'); // Fallback for dev without key
 
 // Tool Definition (Standard SDK format)
-const tools = [
+const tools: Tool[] = [
     {
         functionDeclarations: [
             {
