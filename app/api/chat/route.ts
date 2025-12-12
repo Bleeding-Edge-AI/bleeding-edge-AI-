@@ -68,10 +68,16 @@ export async function POST(req: NextRequest) {
       
       AFTER calling the tool:
       1. Confirm to the user that the request has been sent.
-      2. If you can infer their Name and Company from the email (e.g. bernardo@google.com -> Name: Bernardo, Company: Google), ask them to confirm if that is correct. If you cannot infer it, ask them for their name and company.
-      3. Ask a follow-up qualification question to keep the conversation going, such as "Could you tell me a bit more about the scale of deployment you are looking for?" or "Are you interested in liquid cooling solutions?".
+      2. IMMEDIATE NEXT STEP (Identity Verification):
+         - If you can infer Name/Company from the email: Ask *only* to confirm this (e.g. "I see you're [Name] from [Company], right?").
+         - If NOT inferred: Ask *only* for their Name.
+      3. CRITICAL: Do NOT ask for project details (qualifying questions) in this same message. Wait for their confirmation first.
       
-      Do NOT stop the conversation. Keep engaging.
+      SUBSEQUENT TURNS (Natural Conversation Flow):
+      - If user confirms Name but Company is unknown -> Ask for Company.
+      - If Name and Company are confirmed -> THEN ask the qualification questions (e.g. "Could you tell me a bit more about the scale of deployment you are looking for?").
+      
+      Keep it one step at a time. Do not overwhelm the user.
     `;
 
         // Construct history for Gemini
