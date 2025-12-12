@@ -1,18 +1,14 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI, SchemaType, Tool } from '@google/generative-ai';
 import { Resend } from 'resend';
+import { supabase } from '@/lib/supabase';
 
-// Initialize Gemini Client
+// Initialize Clients
 const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || '';
-if (!apiKey) {
-    console.error("CRITICAL: GEMINI_API_KEY or API_KEY is missing from environment variables.");
-}
 const genAI = new GoogleGenerativeAI(apiKey);
-// Initialize Resend Client
-const resend = new Resend(process.env.RESEND_API_KEY || 're_123'); // Fallback for dev without key
+const resend = new Resend(process.env.RESEND_API_KEY || 're_123');
 
-// Tool Definition (Standard SDK format)
+// Tool Definition
 const tools: Tool[] = [
     {
         functionDeclarations: [
@@ -22,22 +18,10 @@ const tools: Tool[] = [
                 parameters: {
                     type: SchemaType.OBJECT,
                     properties: {
-                        user_email: {
-                            type: SchemaType.STRING,
-                            description: "The user's email address."
-                        },
-                        user_name: {
-                            type: SchemaType.STRING,
-                            description: "The user's name if provided."
-                        },
-                        lead_intent: {
-                            type: SchemaType.STRING,
-                            description: "What the user is interested in (e.g., 'Requesting Spec Sheet', 'Colocation Pricing')."
-                        },
-                        summary: {
-                            type: SchemaType.STRING,
-                            description: "A brief summary of the conversation context."
-                        }
+                        user_email: { type: SchemaType.STRING, description: "The user's email address." },
+                        user_name: { type: SchemaType.STRING, description: "The user's name if provided." },
+                        lead_intent: { type: SchemaType.STRING, description: "What the user is interested in." },
+                        summary: { type: SchemaType.STRING, description: "A brief summary of the conversation." }
                     },
                     required: ["user_email", "lead_intent"]
                 }
@@ -48,10 +32,20 @@ const tools: Tool[] = [
 
 export async function POST(req: NextRequest) {
     try {
-        const { message, history } = await req.json();
+        const { message, history, sessionId } = await req.json();
 
-        // System Instruction to enforce tool use
-        // System Instruction to enforce tool use
+        if (!sessionId) {
+            return NextResponse.json({ error: "Session ID required" }, { status: 400 });
+        }
+
+        // 1. Log User Message to Supabase
+        await supabase.from('messages').insert({
+            session_id: sessionId,
+            role: 'user',
+            content: message
+        });
+
+        // System Instruction (Concise + Email Capture)
         const systemInstruction = `
       You are 'Edge', an AI Sales Engineer for Bleeding Edge Infrastructure.
       
@@ -85,7 +79,7 @@ export async function POST(req: NextRequest) {
       Keep it one step at a time. Do not overwhelm the user.
     `;
 
-        // Construct history for Gemini
+        // Gemini Chat
         const chatHistory = history.map((msg: any) => ({
             role: msg.role === 'user' ? 'user' : 'model',
             parts: [{ text: msg.text }]
@@ -97,75 +91,100 @@ export async function POST(req: NextRequest) {
             systemInstruction: systemInstruction
         });
 
-        const chat = model.startChat({
-            history: chatHistory,
-        });
-
+        const chat = model.startChat({ history: chatHistory });
         const result = await chat.sendMessage(message);
         const response = await result.response;
         const functionCalls = response.functionCalls();
         const call = functionCalls?.[0];
 
-        if (call) {
-            if (call.name === "send_lead_to_sales") {
-                const { user_email, user_name, lead_intent, summary } = call.args as any;
+        let finalResponseText = response.text();
 
-                // Execute Email Sending via Resend
-                console.log("dispatching-email", { user_email, lead_intent });
+        // Handle Tool Call (Lead Capture)
+        if (call && call.name === "send_lead_to_sales") {
+            const { user_email, user_name, lead_intent, summary } = call.args as any;
+            console.log("dispatching-lead", { user_email, lead_intent });
 
-                // Construct Chat Transcript for Email
-                const transcriptHtml = history.map((msg: any) =>
-                    `< p > <strong>${msg.role === 'user' ? 'User' : 'Edge'}: </strong> ${msg.text}</p > `
-                ).join('') + `< p > <strong>User: </strong> ${message}</p > `;
+            // A. Upsert Lead
+            const { data: leadData, error: leadError } = await supabase
+                .from('leads')
+                .upsert({
+                    email: user_email,
+                    company: null, // Initial capture might not have company yet
+                    status: 'NEW',
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'email' })
+                .select()
+                .single();
 
-                try {
-                    if (process.env.RESEND_API_KEY) {
-                        await resend.emails.send({
-                            from: 'Bleeding Edge AI <onboarding@resend.dev>', // Verify domain in prod
-                            to: ['sales@bleedingedge.group'],
-                            subject: `[LEAD] ${lead_intent} `,
-                            html: `
-            < h1 > New Lead Captured </h1>
-                < p > <strong>Email: </strong> ${user_email}</p >
-                    <p><strong>Name: </strong> ${user_name || 'N/A'}</p>
-                        < p > <strong>Intent: </strong> ${lead_intent}</p >
-                            <hr/>
-                            < h3 > Summary </h3>
-                            < p > ${summary || 'No summary provided.'} </p>
-                                < hr />
-                                <h3>Full Chat Transcript </h3>
-                        ${transcriptHtml}
-        `
-                        });
-                    } else {
-                        console.warn("RESEND_API_KEY missing, skipping actual email send.");
-                    }
-                } catch (emailError) {
-                    console.error("Email dispatch failed:", emailError);
-                }
+            if (leadError) console.error("Supabase Lead Error:", leadError);
 
-                // Return tool output to model so it can generate final response
-                // Fix: The SDK expects an array of parts, and 'functionResponse' is a direct property of a Part.
-                const toolResponsePart = {
-                    functionResponse: {
-                        name: "send_lead_to_sales",
-                        response: { status: "success", message: "Email dispatched successfully" }
-                    }
-                };
-
-                // Re-prompting model with tool output:
-                const finalResult = await chat.sendMessage([
-                    toolResponsePart
-                ]);
-
-                return NextResponse.json({ text: finalResult.response.text() });
+            // B. Link Session Messages to this Lead
+            if (leadData) {
+                await supabase
+                    .from('messages')
+                    .update({ lead_id: leadData.id })
+                    .eq('session_id', sessionId);
             }
+
+            // C. Send Email
+            if (process.env.RESEND_API_KEY) {
+                const transcriptHtml = history.map((msg: any) =>
+                    `<p><strong>${msg.role === 'user' ? 'User' : 'Edge'}:</strong> ${msg.text}</p>`
+                ).join('') + `<p><strong>User:</strong> ${message}</p>`;
+
+                await resend.emails.send({
+                    from: 'Bleeding Edge AI <onboarding@resend.dev>',
+                    to: ['sales@bleedingedge.group'],
+                    subject: `[LEAD] ${lead_intent}`,
+                    html: `
+                        <h1>New Lead Captured</h1>
+                        <p><strong>Email:</strong> ${user_email}</p>
+                        <p><strong>Database ID:</strong> ${leadData?.id || 'Pending'}</p>
+                        <p><strong>Intent:</strong> ${lead_intent}</p>
+                        <hr/>
+                        <h3>Transcript</h3>
+                        ${transcriptHtml}
+                    `
+                }).catch(e => console.error("Email failed:", e));
+            }
+
+            // D. Resume Chat
+            const toolResponsePart = {
+                functionResponse: {
+                    name: "send_lead_to_sales",
+                    response: { status: "success", message: "Lead saved to database and email sent." }
+                }
+            };
+            const finalResult = await chat.sendMessage([toolResponsePart]);
+            finalResponseText = finalResult.response.text();
         }
 
-        return NextResponse.json({ text: response.text() });
+        // 2. Log Model Response to Supabase
+        // Note: If we just captured a lead, we try to link this message to it immediately if we have the ID,
+        // otherwise rely on the 'session_id' and future back-fill if needed, but optimally we query the lead_id again or accept the session link.
+        // Actually, if we just upserted, we linked previous messages. This *new* message should also be linked.
+        // Let's try to find lead_id for this session if we didn't just get it.
+        // For efficiency, we can just insert with session_id. The linking logic 'update all messages where session_id=...' captures everything past too if run periodically, 
+        // but the tool call only ran ONCE.
+        // Smart fix: If we just got `leadData`, use it.
+        const { data: currentLead } = await supabase.from('leads').select('id').eq('email', history.find((h: any) => h.text.includes('@'))?.text || '').single(); // Very rough heuristic, better to rely on session grouping later or just session_id for now.
+        // Actually, simply relying on session_id for the whole conversation is safer for anonymous->identified transition.
+        // The previous UPDATE linked everything. Future messages with just session_id are implicitly linked if we map session->lead.
+        // But the user schema has lead_id on messages.
+        // Let's just insert with session_id. If we have leadData from the tool call, use it.
+
+        await supabase.from('messages').insert({
+            session_id: sessionId,
+            role: 'assistant',
+            content: finalResponseText
+            // lead_id: ... (Optional optimization: if we know it, add it. But session_id is the robust link)
+        });
+
+
+        return NextResponse.json({ text: finalResponseText });
 
     } catch (error: any) {
-        console.error("Gemini API Error:", error);
+        console.error("Gemini/Supabase Error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

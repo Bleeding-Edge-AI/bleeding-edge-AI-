@@ -15,6 +15,7 @@
     "@react-three/postprocessing": "^3.0.4",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.6",
+    "@supabase/supabase-js": "^2.87.1",
     "@types/three": "^0.181.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",
@@ -27,7 +28,8 @@
     "react-map-gl": "^8.1.0",
     "resend": "^6.6.0",
     "tailwind-merge": "^3.4.0",
-    "three": "^0.181.2"
+    "three": "^0.181.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/node": "24.10.1",

@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Icons } from './Icons';
 import { ChatMessage } from '../types';
 import { useChat } from '@/app/context/ChatContext';
+import { v4 as uuidv4 } from 'uuid';
 
 export const AIChat: React.FC = () => {
   const { isOpen, openChat, closeChat, activeIntent, clearIntent } = useChat();
@@ -13,83 +14,37 @@ export const AIChat: React.FC = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
 
-  // Safety Net: Track if user typed an email but didn't convert
-  const [capturedEmail, setCapturedEmail] = useState<string | null>(null);
-  const [hasSentInitialLead, setHasSentInitialLead] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // On Mount: Initialize Session ID
   useEffect(() => {
+    let sid = localStorage.getItem('chatSessionId');
+    if (!sid) {
+      sid = uuidv4();
+      localStorage.setItem('chatSessionId', sid);
+    }
+    setSessionId(sid);
     scrollToBottom();
   }, [messages, isOpen]);
 
-  // LISTEN FOR EXTERNAL INTENTS (e.g. from Buttons)
+  // LISTEN FOR EXTERNAL INTENTS
   useEffect(() => {
     if (activeIntent && !isLoading) {
       handleAutoSend(activeIntent);
-      clearIntent(); // Clear immediately so it doesn't loop
+      clearIntent();
     }
   }, [activeIntent]);
-
-  // ABANDONMENT: Listener for emails in input
-  useEffect(() => {
-    const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
-    if (inputValue.match(emailRegex)) {
-      const match = inputValue.match(emailRegex);
-      if (match) {
-        setCapturedEmail(match[0]);
-      }
-    }
-  }, [inputValue]);
-
-  // ABANDONMENT: Beacon on Unmount/Visibility Change (PULSE 2)
-  useEffect(() => {
-    const handleAbandonment = () => {
-      // Only send abandonment if we have an email AND we've already sent the initial pulse
-      // (This ensures we don't spam if they just open/close without doing anything meaningful, 
-      // but DOES save the transcript if they engaged).
-      if (capturedEmail && messages.length > 2) {
-        const payload = JSON.stringify({
-          user_email: capturedEmail,
-          lead_intent: "ABANDONED_CHAT_DRAFT",
-          history: messages,
-          status: "ABANDONED" // Pulse 2
-        });
-
-        if (navigator.sendBeacon) {
-          const blob = new Blob([payload], { type: 'application/json' });
-          navigator.sendBeacon('/api/save-lead', blob);
-        } else {
-          fetch('/api/save-lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: payload,
-            keepalive: true
-          });
-        }
-      }
-    };
-
-    window.addEventListener('beforeunload', handleAbandonment);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') handleAbandonment();
-    });
-
-    return () => {
-      window.removeEventListener('beforeunload', handleAbandonment);
-      document.removeEventListener('visibilitychange', handleAbandonment);
-    };
-  }, [capturedEmail, messages, hasSentInitialLead]);
-
 
   const handleAutoSend = async (text: string) => {
     const userMsg: ChatMessage = { role: 'user', text: text, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
-    await processMessage(text, messages); // Pass *current* state before update (or use prev ref if critical, but OK for user flow)
+    await processMessage(text, messages);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,45 +61,9 @@ export const AIChat: React.FC = () => {
   const processMessage = async (text: string, currentHistory: ChatMessage[]) => {
     setIsLoading(true);
     try {
-      // Check for email in message to save locally for abandonment
-      const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
-      const match = text.match(emailRegex);
-      let currentEmail = capturedEmail;
-
-      if (match) {
-        currentEmail = match[0];
-        setCapturedEmail(currentEmail);
-
-        // PULSE 1: IMMEDIATE CAPTURE
-        if (!hasSentInitialLead) {
-          setHasSentInitialLead(true);
-          // Fire and forget save
-          fetch('/api/save-lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              user_email: currentEmail,
-              lead_intent: "Conversational Capture",
-              history: currentHistory,
-              status: 'INITIAL_CAPTURE'
-            })
-          });
-        }
-      }
-
-      // Update Log (silent) if user adds more info after initial capture
-      if (hasSentInitialLead && currentEmail && !match) {
-        // This message is likely a follow-up answer (Name/Company/Details)
-        fetch('/api/save-lead', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_email: currentEmail,
-            lead_intent: "Follow-up Details",
-            history: currentHistory,
-            status: 'updated'
-          })
-        });
+      if (!sessionId) {
+        console.error("Session ID not initialized");
+        return;
       }
 
       const response = await fetch('/api/chat', {
@@ -152,8 +71,8 @@ export const AIChat: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          // Gemini History must start with User. The first message in local state is the Model Welcome.
-          // We filter it out to ensure valid history.
+          sessionId: sessionId,
+          // Gemini History must start with User. Filter out welcome message.
           history: currentHistory.filter((_, i) => i !== 0).map(m => ({ role: m.role, text: m.text }))
         })
       });
