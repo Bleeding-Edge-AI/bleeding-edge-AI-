@@ -95,15 +95,24 @@ export const AIChat: React.FC = () => {
         })
       });
 
-      if (!response.ok) throw new Error('API Failed');
+      if (!response.ok) {
+        let errorMessage = 'API Failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || 'Unknown API Error';
+        } catch (e) {
+          errorMessage = `HTTP Error ${response.status}`;
+        }
+        throw new Error(errorMessage);
+      }
 
       const data = await response.json();
       const modelMsg: ChatMessage = { role: 'model', text: data.text, timestamp: new Date() };
       setMessages(prev => [...prev, modelMsg]);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setMessages(prev => [...prev, { role: 'model', text: "I'm having trouble connecting to HQ. Please try again or email sales@bleedingedge.group directly.", timestamp: new Date() }]);
+      setMessages(prev => [...prev, { role: 'model', text: `debug_error: ${err.message}`, timestamp: new Date() }]);
     } finally {
       setIsLoading(false);
     }
