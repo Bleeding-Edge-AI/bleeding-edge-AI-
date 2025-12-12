@@ -64,7 +64,7 @@ export const AIChat: React.FC = () => {
   const handleAutoSend = async (text: string) => {
     const userMsg: ChatMessage = { role: 'user', text: text, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
-    await processMessage(text, [...messages, userMsg]);
+    await processMessage(text, messages);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,7 +75,7 @@ export const AIChat: React.FC = () => {
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
 
-    await processMessage(userMsg.text, [...messages, userMsg]);
+    await processMessage(userMsg.text, messages);
   };
 
   const processMessage = async (text: string, currentHistory: ChatMessage[]) => {
