@@ -199,7 +199,7 @@ export const AdoptionDashboard: React.FC = () => {
     );
 };
 
-const FloatingCard: React.FC<{ icon: React.ElementType, title: string, className?: string, delay: number }> = ({ icon: Icon, title, className, delay }) => (
+const FloatingCard: React.FC<{ icon: any, title: string, className?: string, delay: number }> = ({ icon: Icon, title, className, delay }) => (
     <motion.div
         animate={{ y: [0, -15, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: delay }}
