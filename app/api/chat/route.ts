@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { Resend } from 'resend';
 
 // Initialize Gemini Client
@@ -20,22 +20,22 @@ const tools = [
                 name: "send_lead_to_sales",
                 description: "Send a sales lead email when a user provides their email address and expresses interest.",
                 parameters: {
-                    type: "OBJECT",
+                    type: SchemaType.OBJECT,
                     properties: {
                         user_email: {
-                            type: "STRING",
+                            type: SchemaType.STRING,
                             description: "The user's email address."
                         },
                         user_name: {
-                            type: "STRING",
+                            type: SchemaType.STRING,
                             description: "The user's name if provided."
                         },
                         lead_intent: {
-                            type: "STRING",
+                            type: SchemaType.STRING,
                             description: "What the user is interested in (e.g., 'Requesting Spec Sheet', 'Colocation Pricing')."
                         },
                         summary: {
-                            type: "STRING",
+                            type: SchemaType.STRING,
                             description: "A brief summary of the conversation context."
                         }
                     },
