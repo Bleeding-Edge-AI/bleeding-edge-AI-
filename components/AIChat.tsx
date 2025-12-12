@@ -91,7 +91,16 @@ export const AIChat: React.FC = () => {
       }
 
       const data = await response.json();
-      const modelMsg: ChatMessage = { role: 'model', text: data.text, timestamp: new Date() };
+
+      let displayText = data.text;
+      // DEBUG: Append Database Status if failed or success (for visibility)
+      if (data.db_status === 'error') {
+        displayText += `\n\n[System Alert: Database Save Failed - ${data.db_error}]`;
+      } else if (data.db_status === 'success') {
+        // displayText += `\n\n[System: Message Saved to DB]`; // Comment out if too noisy, but user requested it.
+      }
+
+      const modelMsg: ChatMessage = { role: 'model', text: displayText, timestamp: new Date() };
       setMessages(prev => [...prev, modelMsg]);
 
     } catch (err: any) {

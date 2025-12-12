@@ -39,11 +39,22 @@ export async function POST(req: NextRequest) {
         }
 
         // 1. Log User Message to Supabase
-        await supabase.from('messages').insert({
+        let dbStatus = 'pending';
+        let dbError = null;
+
+        const { error: insertError } = await supabase.from('messages').insert({
             session_id: sessionId,
             role: 'user',
             content: message
         });
+
+        if (insertError) {
+            console.error("Supabase Log Error:", insertError);
+            dbStatus = 'error';
+            dbError = insertError.message;
+        } else {
+            dbStatus = 'success';
+        }
 
         // System Instruction (Concise + Email Capture)
         const systemInstruction = `
@@ -160,28 +171,18 @@ export async function POST(req: NextRequest) {
         }
 
         // 2. Log Model Response to Supabase
-        // Note: If we just captured a lead, we try to link this message to it immediately if we have the ID,
-        // otherwise rely on the 'session_id' and future back-fill if needed, but optimally we query the lead_id again or accept the session link.
-        // Actually, if we just upserted, we linked previous messages. This *new* message should also be linked.
-        // Let's try to find lead_id for this session if we didn't just get it.
-        // For efficiency, we can just insert with session_id. The linking logic 'update all messages where session_id=...' captures everything past too if run periodically, 
-        // but the tool call only ran ONCE.
-        // Smart fix: If we just got `leadData`, use it.
-        const { data: currentLead } = await supabase.from('leads').select('id').eq('email', history.find((h: any) => h.text.includes('@'))?.text || '').single(); // Very rough heuristic, better to rely on session grouping later or just session_id for now.
-        // Actually, simply relying on session_id for the whole conversation is safer for anonymous->identified transition.
-        // The previous UPDATE linked everything. Future messages with just session_id are implicitly linked if we map session->lead.
-        // But the user schema has lead_id on messages.
-        // Let's just insert with session_id. If we have leadData from the tool call, use it.
-
         await supabase.from('messages').insert({
             session_id: sessionId,
             role: 'assistant',
             content: finalResponseText
-            // lead_id: ... (Optional optimization: if we know it, add it. But session_id is the robust link)
         });
 
 
-        return NextResponse.json({ text: finalResponseText });
+        return NextResponse.json({
+            text: finalResponseText,
+            db_status: dbStatus,
+            db_error: dbError
+        });
 
     } catch (error: any) {
         console.error("Gemini/Supabase Error:", error);
