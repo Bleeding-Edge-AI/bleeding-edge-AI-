@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useChat } from '@/app/context/ChatContext';
 import { ArrowRight } from 'lucide-react';
 import { CinematicHero } from '@/components/home/CinematicHero';
-import { StackRouter } from '@/components/home/StackRouter';
+import { TexturedStackRouter } from '@/components/home/TexturedStackRouter';
 import { CapabilitiesSection } from '@/components/home/CapabilitiesSection';
 import { HomeCredibilitySection } from '@/components/home/HomeCredibilitySection';
 import { ScrollToFullscreenVideo } from '@/components/home/ScrollToFullscreenVideo';
@@ -19,8 +19,8 @@ export default function HomePage() {
             {/* 1. HERO: CINEMATIC VISION */}
             <CinematicHero />
 
-            {/* 2. ROUTER: THE STACK */}
-            <StackRouter />
+            {/* 2. ROUTER: THE TEXTURED STACK */}
+            <TexturedStackRouter />
 
             {/* 3. CAPABILITIES: THE ENGINE */}
             <CapabilitiesSection />
