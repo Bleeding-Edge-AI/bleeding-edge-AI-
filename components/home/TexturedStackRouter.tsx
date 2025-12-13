@@ -8,30 +8,6 @@ import Link from 'next/link';
 // Defines the data for each layer
 const LAYERS = [
     {
-        id: 'transform',
-        title: 'TRANSFORM',
-        subtitle: 'Applied AI. Enterprise Agents & ROI.',
-        description: 'Deploy autonomous AI agents that integrate deeply with your enterprise data. We build the neural tissue of your organization to drive real-world ROI.',
-        icon: Network, // "Brain/Network"
-        color: 'cyan',
-        route: '/applied-ai',
-        texture: '/textures/stack-transform.png',
-        accentColor: '#06b6d4', // cyan-500
-        glowcolor: 'rgba(6,182,212,0.6)'
-    },
-    {
-        id: 'compute',
-        title: 'COMPUTE',
-        subtitle: 'AI Cloud. Private Bare Metal Clusters.',
-        description: 'Access high-performance H100 clusters with bare-metal isolation. Designed for foundation model training and high-throughput inference without the virtualization tax.',
-        icon: Cpu,
-        color: 'green',
-        route: '/ai-cloud',
-        texture: '/textures/stack-compute.png',
-        accentColor: '#22c55e', // green-500
-        glowcolor: 'rgba(34,197,94,0.6)'
-    },
-    {
         id: 'build',
         title: 'BUILD',
         subtitle: 'Infrastructure. 120-Day Modular Build.',
@@ -54,6 +30,30 @@ const LAYERS = [
         texture: '/textures/stack-deploy.png',
         accentColor: '#f59e0b', // amber-500
         glowcolor: 'rgba(245,158,11,0.6)'
+    },
+    {
+        id: 'compute',
+        title: 'COMPUTE',
+        subtitle: 'AI Cloud. Private Bare Metal Clusters.',
+        description: 'Access high-performance H100 clusters with bare-metal isolation. Designed for foundation model training and high-throughput inference without the virtualization tax.',
+        icon: Cpu,
+        color: 'green',
+        route: '/ai-cloud',
+        texture: '/textures/stack-compute.png',
+        accentColor: '#22c55e', // green-500
+        glowcolor: 'rgba(34,197,94,0.6)'
+    },
+    {
+        id: 'transform',
+        title: 'TRANSFORM',
+        subtitle: 'Applied AI. Enterprise Agents & ROI.',
+        description: 'Deploy autonomous AI agents that integrate deeply with your enterprise data. We build the neural tissue of your organization to drive real-world ROI.',
+        icon: Network, // "Brain/Network"
+        color: 'cyan',
+        route: '/applied-ai',
+        texture: '/textures/stack-transform.png',
+        accentColor: '#06b6d4', // cyan-500
+        glowcolor: 'rgba(6,182,212,0.6)'
     }
 ];
 
@@ -108,125 +108,35 @@ export const TexturedStackRouter: React.FC = () => {
 
     return (
         <section ref={containerRef} className="relative h-[400vh] bg-neutral-950">
-            <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center pt-32 pb-20 px-8">
-                <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+            <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center pt-20 lg:pt-32 pb-10 lg:pb-20 px-4 lg:px-8">
 
-                    {/* --- LEFT SIDE: CONTENT --- */}
-                    <div className="relative h-[500px] flex items-center order-2 lg:order-1">
+                {/*
+                   MOBILE LAYOUT STRATEGY:
+                   - Stack is absolutely positioned or centered in background.
+                   - Content overlays it.
+                   - We use a flex col for mobile, grid for desktop.
+                */}
+                <div className="w-full max-w-7xl h-full relative flex flex-col lg:grid lg:grid-cols-2 lg:gap-24 items-center justify-center">
 
-                        {/* 1. INTRO HEADER */}
-                        <motion.div
-                            style={{ opacity: headerOpacity, y: headerY, pointerEvents: headerPointerEvents }}
-                            className="absolute inset-0 flex flex-col justify-center text-left"
-                        >
-                            <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tighter leading-tight">
-                                THE INTEGRATED <br /> <span className="text-amber-500">STACK.</span>
-                            </h2>
-                            <p className="text-xl md:text-2xl text-neutral-400 font-light max-w-lg">
-                                A vertically aligned ecosystem designed for the Intelligence Age.
-                                <br /><br />
-                                Scroll to explore the layers.
-                            </p>
-                        </motion.div>
-
-                        {/* 2. LAYERS LIST */}
-                        <motion.div
-                            style={{ opacity: listOpacity, x: listX, pointerEvents: listPointerEvents }}
-                            className="absolute inset-0 flex flex-col justify-center gap-4"
-                        >
-                            {LAYERS.map((layer, index) => {
-                                const isHovered = activeIndex === index;
-                                const isDimmed = activeIndex !== null && !isHovered;
-
-                                return (
-                                    <Link
-                                        key={layer.id}
-                                        href={layer.route}
-                                        className="group relative block"
-                                    >
-                                        <motion.div
-                                            animate={{
-                                                opacity: isDimmed ? 0.3 : 1,
-                                                x: isHovered ? 20 : 0,
-                                                scale: isHovered ? 1.02 : 1,
-                                                borderColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0)',
-                                                backgroundColor: isHovered ? 'rgba(23,23,23,0.8)' : 'rgba(0,0,0,0)'
-                                            }}
-                                            transition={{ duration: 0.3 }}
-                                            className={`flex flex-col p-4 md:p-6 rounded-2xl border transition-all duration-300 ${isHovered ? 'shadow-2xl' : ''}`}
-                                        >
-                                            <div className="flex items-start gap-6">
-                                                {/* Icon Box */}
-                                                <div
-                                                    className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300"
-                                                    style={{
-                                                        backgroundColor: isHovered ? layer.accentColor : 'rgba(255,255,255,0.05)',
-                                                        color: isHovered ? '#000' : layer.accentColor
-                                                    }}
-                                                >
-                                                    <layer.icon className="w-6 h-6" />
-                                                </div>
-
-                                                <div>
-                                                    <div className="flex items-center gap-3 mb-1">
-                                                        <h3
-                                                            className="text-2xl font-bold tracking-widest transition-colors duration-300"
-                                                            style={{ color: isHovered ? layer.accentColor : 'white' }}
-                                                        >
-                                                            {layer.title}
-                                                        </h3>
-                                                        <ArrowRight
-                                                            className={`w-5 h-5 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-2' : 'opacity-0 -translate-x-2'}`}
-                                                            style={{ color: layer.accentColor }}
-                                                        />
-                                                    </div>
-                                                    <p className="text-neutral-400 font-light text-lg">
-                                                        {layer.subtitle}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            {/* EXPANDED DESCRIPTION */}
-                                            <motion.div
-                                                initial={false}
-                                                animate={{
-                                                    height: isHovered ? 'auto' : 0,
-                                                    opacity: isHovered ? 1 : 0,
-                                                    marginTop: isHovered ? 16 : 0
-                                                }}
-                                                transition={{ duration: 0.4, ease: "circOut" }}
-                                                className="overflow-hidden"
-                                            >
-                                                <p className="text-neutral-300 leading-relaxed pl-[72px] pr-4">
-                                                    {layer.description}
-                                                </p>
-                                            </motion.div>
-                                        </motion.div>
-                                    </Link>
-                                );
-                            })}
-                        </motion.div>
-                    </div>
-
-                    {/* --- RIGHT SIDE: 3D TEXTURED STACK --- */}
-                    <div className="relative h-[600px] flex items-center justify-center perspective-[2000px] order-1 lg:order-2">
-                        {/* 
-                            Stack is visually largely static in position, but layers move z-index/pop.
-                            We keep it slightly scaled up always now (1.05 default).
-                        */}
+                    {/* --- RIGHT SIDE: 3D TEXTURED STACK (Background on Mobile) --- */}
+                    {/* On Desktop: Order 2. On Mobile: Absolute centered or Order 1 with adjustments. */}
+                    {/* UPDATED: Changed items-center to items-start + padding to bring stack up on mobile */}
+                    <div className="absolute inset-0 lg:static lg:inset-auto flex items-start pt-32 lg:pt-0 lg:items-center justify-center perspective-[2000px] z-0 lg:order-2 pointer-events-none lg:pointer-events-auto">
                         <div
-                            className="relative w-80 h-80 preserve-3d"
-                            style={{ transform: 'rotateX(55deg) rotateZ(45deg) scale(1.05)' }}
+                            className="relative w-64 h-64 md:w-80 md:h-80 preserve-3d"
+                            style={{ transform: 'rotateX(55deg) rotateZ(45deg) scale(0.9) md:scale(1.05)' }}
                         >
                             {LAYERS.map((layer, index) => {
                                 const isHovered = activeIndex === index;
                                 const isDimmed = activeIndex !== null && !isHovered;
 
-                                // --- CONSTANT EXPANDED GAP ---
-                                // We keep the gap large (150px) to show the separation clearly at all times.
+                                // Reduce gap slightly on mobile to fit
                                 const gap = 150;
 
-                                const posIndex = (LAYERS.length - 1 - index);
+                                // UPDATED: Build from ground up.
+                                // Index 0 (Build) -> Bottom (posIndex 0)
+                                // Index 3 (Transform) -> Top (posIndex 3)
+                                const posIndex = index;
                                 const zOffset = (posIndex * gap) - ((LAYERS.length - 1) * gap / 2);
 
                                 return (
@@ -235,17 +145,15 @@ export const TexturedStackRouter: React.FC = () => {
                                         className="absolute inset-0 preserve-3d"
                                         animate={{
                                             translateZ: zOffset,
-                                            // The active layer "levitates" slightly more
                                             y: isHovered ? -40 : 0,
-                                            // scale: isHovered ? 1.1 : 1, // Optional: Scale up active
-                                            opacity: isDimmed ? 0.3 : 1, // Dim others
+                                            opacity: isDimmed ? 0.2 : 1, // Dim others more
+                                            filter: isHovered ? 'brightness(1.2)' : 'brightness(0.5)', // Brighten active, dim others
                                         }}
                                         style={{
-                                            zIndex: LAYERS.length - index
+                                            zIndex: index + 1
                                         }}
                                         transition={{ type: "spring", stiffness: 100, damping: 20 }}
                                     >
-                                        {/* TOP FACE */}
                                         <div
                                             className="absolute inset-0 rounded-xl shadow-2xl transition-all duration-500"
                                             style={{
@@ -257,8 +165,6 @@ export const TexturedStackRouter: React.FC = () => {
                                         >
                                             <div className={`absolute inset-0 bg-black/20 hover:bg-transparent transition-colors duration-500 rounded-xl ${isHovered ? 'bg-transparent' : ''}`} />
                                         </div>
-
-                                        {/* SIDE FACES */}
                                         <div
                                             className="absolute top-full left-0 w-full h-4 bg-neutral-900 origin-top transform-3d"
                                             style={{
@@ -279,6 +185,115 @@ export const TexturedStackRouter: React.FC = () => {
                                 );
                             })}
                         </div>
+                    </div>
+
+
+                    {/* --- LEFT SIDE: CONTENT (Foreground) --- */}
+                    <div className="relative w-full h-full lg:h-[500px] flex flex-col justify-end lg:justify-center z-10 lg:order-1 pointer-events-none">
+
+                        {/* 1. INTRO HEADER */}
+                        <motion.div
+                            style={{ opacity: headerOpacity, y: headerY, pointerEvents: headerPointerEvents }}
+                            className="absolute inset-0 flex flex-col justify-center text-center lg:text-left items-center lg:items-start"
+                        >
+                            <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tighter leading-tight drop-shadow-2xl bg-black/50 lg:bg-transparent p-4 lg:p-0 rounded-2xl backdrop-blur-sm lg:backdrop-blur-none">
+                                THE INTEGRATED <br /> <span className="text-amber-500">STACK.</span>
+                            </h2>
+                            <p className="text-xl md:text-2xl text-neutral-200 lg:text-neutral-400 font-light max-w-lg bg-black/50 lg:bg-transparent p-4 lg:p-0 rounded-xl ml-4 mr-4 lg:ml-0 lg:mr-0 backdrop-blur-sm lg:backdrop-blur-none">
+                                A vertically aligned ecosystem designed for the Intelligence Age.
+                                <br /><br />
+                                Scroll to explore the layers.
+                            </p>
+                        </motion.div>
+
+                        {/* 2. LAYERS LIST */}
+                        {/* 
+                             Mobile: Only show active card at bottom.
+                             Desktop: Show all in list.
+                        */}
+                        <motion.div
+                            style={{ opacity: listOpacity, x: listX, pointerEvents: listPointerEvents }}
+                            className="absolute lg:inset-0 w-full bottom-0 top-auto lg:top-0 flex flex-col justify-end lg:justify-center gap-4 pb-8 lg:pb-0 px-4 lg:px-0"
+                        >
+                            {LAYERS.map((layer, index) => {
+                                const isHovered = activeIndex === index;
+                                const isDimmed = activeIndex !== null && !isHovered;
+
+                                // Mobile: Hide if not active
+                                const mobileClass = isHovered ? 'flex' : 'hidden lg:flex';
+
+                                return (
+                                    <Link
+                                        key={layer.id}
+                                        href={layer.route}
+                                        className={`group relative ${mobileClass} pointer-events-auto`}
+                                    >
+                                        <motion.div
+                                            animate={{
+                                                opacity: isDimmed ? 0.3 : 1, // On desktop dimming. On mobile hidden anyway.
+                                                x: isHovered ? 20 : 0, // Desktop offset
+                                                scale: isHovered ? 1.02 : 1,
+                                                borderColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0)',
+                                                backgroundColor: isHovered ? 'rgba(23,23,23,0.95)' : 'rgba(0,0,0,0)'
+                                            }}
+                                            transition={{ duration: 0.3 }}
+                                            // Added bg-black/80 for mobile readability
+                                            className={`flex flex-col w-full p-4 md:p-6 rounded-2xl border transition-all duration-300 ${isHovered ? 'shadow-2xl bg-neutral-900/90 backdrop-blur-md' : 'bg-transparent border-transparent'}`}
+                                        >
+                                            <div className="flex items-start gap-4 md:gap-6">
+                                                {/* Icon Box */}
+                                                <div
+                                                    className="w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300"
+                                                    style={{
+                                                        backgroundColor: isHovered ? layer.accentColor : 'rgba(255,255,255,0.05)',
+                                                        color: isHovered ? '#000' : layer.accentColor
+                                                    }}
+                                                >
+                                                    <layer.icon className="w-5 h-5 md:w-6 md:h-6" />
+                                                </div>
+
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-3 mb-1">
+                                                        <h3
+                                                            className="text-xl md:text-2xl font-bold tracking-widest transition-colors duration-300"
+                                                            style={{ color: isHovered ? layer.accentColor : 'white' }}
+                                                        >
+                                                            {layer.title}
+                                                        </h3>
+                                                        <ArrowRight
+                                                            className={`w-5 h-5 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-2' : 'opacity-0 -translate-x-2'}`}
+                                                            style={{ color: layer.accentColor }}
+                                                        />
+                                                    </div>
+                                                    <p className="text-neutral-300 md:text-neutral-400 font-light text-base md:text-lg">
+                                                        {layer.subtitle}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* EXPANDED DESCRIPTION */}
+                                            <motion.div
+                                                initial={false}
+                                                // Always expanded on mobile if active (since we only show active)
+                                                // On desktop driven by hover/active
+                                                // Since we mapped isHovered to activeIndex, this works for both.
+                                                animate={{
+                                                    height: isHovered ? 'auto' : 0,
+                                                    opacity: isHovered ? 1 : 0,
+                                                    marginTop: isHovered ? 16 : 0
+                                                }}
+                                                transition={{ duration: 0.4, ease: "circOut" }}
+                                                className="overflow-hidden"
+                                            >
+                                                <p className="text-neutral-300 text-sm md:text-base leading-relaxed pl-0 md:pl-[72px] pr-4">
+                                                    {layer.description}
+                                                </p>
+                                            </motion.div>
+                                        </motion.div>
+                                    </Link>
+                                );
+                            })}
+                        </motion.div>
                     </div>
 
                 </div>
