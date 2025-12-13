@@ -8,6 +8,7 @@ import { CinematicHero } from '@/components/home/CinematicHero';
 import { StackRouter } from '@/components/home/StackRouter';
 import { CapabilitiesSection } from '@/components/home/CapabilitiesSection';
 import { HomeCredibilitySection } from '@/components/home/HomeCredibilitySection';
+import { ScrollToFullscreenVideo } from '@/components/home/ScrollToFullscreenVideo';
 
 export default function HomePage() {
     const { openChatWithIntent } = useChat();
@@ -27,7 +28,10 @@ export default function HomePage() {
             {/* 4. CREDIBILITY: SOCIAL PROOF */}
             <HomeCredibilitySection />
 
-            {/* 5. FOOTER CTA */}
+            {/* 5. IMMERSIVE INTRO VIDEO */}
+            <ScrollToFullscreenVideo />
+
+            {/* 6. FOOTER CTA */}
             <section className="py-32 px-6 bg-amber-950/20 border-t border-amber-900/30 text-center">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}

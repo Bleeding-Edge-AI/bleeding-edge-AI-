@@ -29,7 +29,7 @@ export const CinematicHero: React.FC = () => {
                     className="w-full h-full object-cover"
                     poster="/api/placeholder/1920/1080" // Fallback
                 >
-                    <source src="https://assets.mixkit.co/videos/preview/mixkit-server-room-with-blue-lights-2266-large.mp4" type="video/mp4" />
+                    <source src="/eye-catcher.mp4" type="video/mp4" />
                 </video>
             </motion.div>
 
