@@ -9,6 +9,7 @@ import { AdoptionDashboard } from './AdoptionDashboard';
 import { ProprietaryArsenal } from './ProprietaryArsenal';
 import { AiInfiniteMatrix } from './AiInfiniteMatrix';
 import { AiTransformationHero } from './AiTransformationHero';
+import { AiEconomySection } from './AiEconomySection';
 
 import { useChat } from '@/app/context/ChatContext';
 
@@ -53,6 +54,9 @@ export const AppliedAIPage: React.FC = () => {
     <div className="min-h-screen bg-slate-950 pt-0">
       {/* Hero */}
       <AiTransformationHero />
+
+      {/* AI Economy Section */}
+      <AiEconomySection />
 
       {/* Core Offerings Scroll */}
       <AiOfferingScroll />

@@ -87,7 +87,7 @@ export const Navbar: React.FC = () => {
     {
       name: 'Company',
       dropdown: [
-        { name: 'About Us', path: '/about-us' },
+        { name: 'About Us', path: '/about' },
         { name: 'Become a Partner', path: '/partner' }
       ]
     },
