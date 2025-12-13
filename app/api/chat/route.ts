@@ -8,23 +8,23 @@ const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || '';
 const genAI = new GoogleGenerativeAI(apiKey);
 const resend = new Resend(process.env.RESEND_API_KEY || 're_123');
 
-// Tool Definition (Updated for Hybrid Model extraction)
+// Tool Definition (Updated for Strict Slot Filling)
 const tools: Tool[] = [
     {
         functionDeclarations: [
             {
                 name: "capture_lead",
-                description: "Extract lead details when the user provides them. Always call this if the email is provided.",
+                description: "Extract lead details. Call this IMMEDIATELY when the user provides ANY of these fields. Do not wait for all of them.",
                 parameters: {
                     type: SchemaType.OBJECT,
                     properties: {
                         email: { type: SchemaType.STRING, description: "The user's email address." },
-                        name: { type: SchemaType.STRING, description: "The user's name if provided." },
-                        company: { type: SchemaType.STRING, description: "The user's company name if provided." },
+                        name: { type: SchemaType.STRING, description: "The user's name." },
+                        company: { type: SchemaType.STRING, description: "The user's company name." },
                         service_requested: { type: SchemaType.STRING, description: "The service they are interested in (e.g., 'Build', 'Colo', 'AI Cloud')." },
                         summary: { type: SchemaType.STRING, description: "Brief summary of the request." }
                     },
-                    required: ["email"]
+                    required: [] // Allow partial updates
                 }
             }
         ]
@@ -101,29 +101,31 @@ export async function POST(req: NextRequest) {
         // ---------------------------------------------------------
         const systemInstruction = `
       You are 'Edge', an AI Sales Engineer for Bleeding Edge Infrastructure.
-      
-      CORE BEHAVIOR:
-      1. Be extremely CONCISE. Use short sentences. Avoid fluff.
-      2. If a user implies interest in ANY product/pricing/docs -> IMMEDIATELY ask for their business email.
-      
-      Use this exact format for the first response:
-      "[Acknowledgement]. Could you share your business email so I can send the details?"
-      
-      Example:
-      User: "I need H100s."
-      You: "I can help with H100 availability. What is your business email address?"
 
-      Once they provide data, use the 'capture_lead' tool.
+      CORE LOGIC - STATE MACHINE:
       
-      AFTER the 'capture_lead' tool is called:
-      1. ACKNOWLEDGE: Confirm the request was sent.
-      2. VERIFY IDENTITY (Mandatory):
-         - IF email domain is corporate (e.g. @nvidia.com): Ask "I see you are with [Company]. Is that correct?"
-         - IF email domain is generic (e.g. @gmail.com): Ask "Thanks. What company are you representing?"
-      3. STOP. Do not ask qualification questions yet. Wait for the user to confirm their company.
+      STATE 1: IDENTIFICATION (Highest Priority)
+      Your PRIMARY goal is to fill these "Data Slots": [Email, Name, Company, Service Request].
       
-      Only AFTER they confirm company:
-      - Start qualification (Density? Location? Volume?).
+      RULES:
+      1. If you receive ANY of these fields, call the 'capture_lead' tool IMMEDIATELY. Save partial data.
+      2. If you have Email but not Name -> Ask for Name.
+      3. If you have Email and Name but not Company -> Ask for Company.
+      4. DO NOT proceed to technical consulting until you have at least Email and Company.
+      
+      Example Flow:
+      User: "I need servers."
+      You: "I can help. What is your business email?"
+      User: "vlad@nvidia.com"
+      -> CALL TOOL capture_lead({ email: "vlad@nvidia.com" })
+      You: "Got it. And what is your name?"
+      User: "Jensen"
+      -> CALL TOOL capture_lead({ name: "Jensen" })
+      You: "Thanks Jensen. Assuming you are with Nvidia based on the email?"
+      
+      STATE 2: ADVISORY (Only after Identification)
+      - Once identified, discuss [Density, Location, Volume].
+      - Be extremely CONCISE. Short sentences.
     `;
 
         const chatHistory = history.map((msg: any) => ({
@@ -150,25 +152,30 @@ export async function POST(req: NextRequest) {
         // ---------------------------------------------------------
         if (call && call.name === "capture_lead") {
             const { email, name, company, service_requested, summary } = call.args as any;
-            console.log("Extracting Lead Data:", call.args);
 
-            // A. Update Lead Metadata in DB
+            // LOGGING FOR VERIFICATION
+            console.log("Saving Lead Data:", call.args);
+
+            // A. Update Lead Metadata in DB (Partial Updates)
             if (currentLeadId) {
+                const updates: any = {};
+                // Only add fields if they exist in the args
+                if (email) updates.email = email;
+                if (name) updates.name = name;
+                if (company) updates.company = company;
+                if (service_requested) updates.service_requested = service_requested; // Correct column name
+
                 const { error: upError } = await supabase
                     .from('leads')
-                    .update({
-                        email: email,
-                        name: name,
-                        company: company,
-                        service_requested: service_requested,
-                        status: 'CAPTURED'
-                    })
+                    .update(updates)
                     .eq('id', currentLeadId);
 
                 if (upError) console.error("Lead Update Error:", upError);
             }
 
             // B. Send Email Notification
+            /* 
+            // DISABLED: Saving to Supabase only for now
             if (process.env.RESEND_API_KEY) {
                 await resend.emails.send({
                     from: 'Bleeding Edge AI <onboarding@resend.dev>',
@@ -184,6 +191,7 @@ export async function POST(req: NextRequest) {
                     `
                 }).catch(e => console.error("Email failed:", e));
             }
+            */
 
             const toolResponsePart = {
                 functionResponse: {
