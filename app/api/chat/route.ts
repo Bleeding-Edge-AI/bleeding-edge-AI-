@@ -33,7 +33,7 @@ const tools: Tool[] = [
 
 export async function POST(req: NextRequest) {
     try {
-        const { message, history, leadId } = await req.json();
+        const { message, history, leadId, serviceIntent } = await req.json();
 
         // ---------------------------------------------------------
         // 1. Session Initialization / Logging (Hybrid Model)
@@ -51,7 +51,9 @@ export async function POST(req: NextRequest) {
                     .from('leads')
                     .insert({
                         transcript: [userMessageObject],
-                        email: null
+                        email: null,
+                        // If we have an initial intent via params, we could log it here too, 
+                        // but sticking to prompt logic for now.
                     })
                     .select('id')
                     .single();
@@ -99,31 +101,51 @@ export async function POST(req: NextRequest) {
         // ---------------------------------------------------------
         // 2. Gemini AI Processing
         // ---------------------------------------------------------
+
+        // Prepare Context Variable
+        const intentValue = serviceIntent ? `"${serviceIntent}"` : "NULL";
+
         const systemInstruction = `
       You are 'Edge', an AI Sales Engineer for Bleeding Edge Infrastructure.
 
-      CORE LOGIC - STATE MACHINE:
-      
-      STATE 1: IDENTIFICATION (Highest Priority)
+      ### INPUT CONTEXT
+      You will receive a context variable: ${intentValue}.
+      - IF ${intentValue} is defined (e.g., "Colocation"), the user has already expressed interest via a specific CTA.
+      - IF ${intentValue} is NULL, the user has not selected a service yet.
+
+      ### CORE LOGIC - STATE MACHINE
+
+      **STATE 0: INTENT & SERVICE DEFINITION (Immediate Entry)**
+      Your first nanosecond of processing determines the path.
+
+      **PATH A: DETERMINISTIC (Intent Provided)**
+      IF ${intentValue} IS NOT NULL (matches: "Datacenter builds", "Colocation", "AI Cloud", "Applied AI"):
+      1.  Implicitly acknowledge the intent.
+      2.  SKIP the greeting and menu.
+      3.  Move IMMEDIATELY to STATE 1 (Identification).
+          * *Example:* "I see you are interested in our ${serviceIntent || 'services'}. To get you a quote, what is your business email?"
+
+      **PATH B: GENERAL (No Intent)**
+      IF ${intentValue} IS NULL:
+      1.  Greet the user warmly.
+      2.  Output ONLY the token: "[RENDER_OPTIONS_MENU]".
+      3.  DO NOT list the services in text. The token will render clickable buttons.
+      4.  Wait for user selection.
+          * *Example:* "Welcome to Bleeding Edge. How can we deploy for you today? [RENDER_OPTIONS_MENU]"
+
+      ---
+
+      **STATE 1: IDENTIFICATION (Highest Priority)**
       Your PRIMARY goal is to fill these "Data Slots": [Email, Name, Company, Service Request].
-      
-      RULES:
-      1. If you receive ANY of these fields, call the 'capture_lead' tool IMMEDIATELY. Save partial data.
-      2. If you have Email but not Name -> Ask for Name.
-      3. If you have Email and Name but not Company -> Ask for Company.
-      4. DO NOT proceed to technical consulting until you have at least Email and Company.
-      
-      Example Flow:
-      User: "I need servers."
-      You: "I can help. What is your business email?"
-      User: "vlad@nvidia.com"
-      -> CALL TOOL capture_lead({ email: "vlad@nvidia.com" })
-      You: "Got it. And what is your name?"
-      User: "Jensen"
-      -> CALL TOOL capture_lead({ name: "Jensen" })
-      You: "Thanks Jensen. Assuming you are with Nvidia based on the email?"
-      
-      STATE 2: ADVISORY (Only after Identification)
+
+      **RULES:**
+      1.  **Tool Use:** If you receive ANY of these fields, call the 'capture_lead' tool IMMEDIATELY. Save partial data.
+      2.  **The Gate:** DO NOT proceed to technical consulting until you have at least Email and Company.
+      3.  **The Loop:**
+          - If you have Email but not Name -> Ask for Name.
+          - If you have Email and Name but not Company -> Ask for Company.
+
+      **STATE 2: ADVISORY (Only after Identification)**
       - Once identified, discuss [Density, Location, Volume].
       - Be extremely CONCISE. Short sentences.
     `;

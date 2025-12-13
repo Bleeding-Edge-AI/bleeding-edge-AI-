@@ -150,7 +150,25 @@ export const AIChat: React.FC = () => {
                     : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'
                     }`}
                 >
-                  {msg.text}
+                  {/* Message Content with Option Parsing */}
+                  {msg.text.includes('[RENDER_OPTIONS_MENU]') ? (
+                    <div className="flex flex-col gap-3">
+                      <span>{msg.text.replace('[RENDER_OPTIONS_MENU]', '')}</span>
+                      <div className="grid grid-cols-1 gap-2 mt-2">
+                        {['Datacenter builds', 'Colocation', 'AI Cloud', 'Applied AI'].map((option) => (
+                          <button
+                            key={option}
+                            onClick={() => handleAutoSend(option)}
+                            className="text-left text-xs bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 hover:text-brand-300 border border-brand-500/20 rounded-lg px-3 py-2 transition-all hover:scale-[1.02] active:scale-95"
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    msg.text
+                  )}
                 </div>
               </div>
             ))}
